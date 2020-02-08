@@ -9,9 +9,11 @@
         fwd-goal (fn [player-xg] (* player-xg 4))
         assist (fn [player-xa] (* player-xa 3))
         gk-def-clean-sheet (fn [team-xg-conceded]
-                             (if (< team-xg-conceded 1)
-                               (- 4 (* team-xg-conceded 4))
-                               (- 1 team-xg-conceded)))]
+                             (cond
+                               (= team-xg-conceded 0) 0
+                               (< team-xg-conceded 1) (- 4 (* team-xg-conceded 4))
+                               (> team-xg-conceded 2) (- 1 (/ (- 2 team-xg-conceded) 2))
+                               (>= team-xg-conceded 1) (- 1 team-xg-conceded)))]
 
         {
       :gk-scores (fn [team-xg-conceded gsaa]
@@ -23,9 +25,11 @@
                           (assist player-xga)))
          :mid-scores (fn [player-xg player-xga team-xg-conceded player-shots player-conversion]
                        (+ (mid-goal player-xg)
-                          (if (< team-xg-conceded 1)
-                              (- 1 team-xg-conceded)
-                              0)
+                          (cond
+                            (= team-xg-conceded 0) 0
+                            (< team-xg-conceded 0) 1
+                            (< team-xg-conceded 1) (- 1 team-xg-conceded)
+                            :else 0)
                           (assist player-xga)))
                           ;(if (or (< player-shots min-shots) (<= player-conversion base-conversion))
                           ;  0

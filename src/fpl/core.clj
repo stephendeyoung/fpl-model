@@ -21,8 +21,9 @@
 
 (defn- check-number-players-each-position [players]
   (let [{goalkeepers :1 defenders :2 midfielders :3 forwards :4}  (into {} (for [[k v] (group-by :element_type players)]
-                                                                          [(keyword (str k)) (count v)])
-                                                      )]
+                                                                             [(keyword (str k)) (count v)])
+                                                                        )
+        ]
     (cond
       (< goalkeepers 2) "Not enough goalkeepers"
       (< defenders 5) "Not enough defenders"
@@ -59,28 +60,41 @@
         fpl-players (-> fpl-data
                         :body
                         :elements)
-        statsbomb-player-data (read-statsbomb-data "statsbomb-player-data-gw20.edn")
-        statsbomb-team-data (read-statsbomb-data "statsbomb-team-data-gw20.edn")
+        statsbomb-player-data (read-statsbomb-data "statsbomb-player-data-gw23.edn")
+        statsbomb-team-data (read-statsbomb-data "statsbomb-team-data-gw23.edn")
         fpl-players-per-mins (filter
                                (fn [player]
                                  (if-let [matching-sb-player (find-matching-sb-player player statsbomb-player-data)]
                                    (or
                                      (and (>= (:minutes matching-sb-player) 1170)
-                                          (every? #(not (= (:web_name player) %)) ["De Bruyne"]))
-                                     (some #(= (:web_name player) %) ["Jesus" "Pulisic" "Salah"]))
+                                          (every? #(not (= (:web_name player) %)) [;"Bernardo Silva"
+                                                                                   ;"El Ghazi"
+                                                                                   "Jesus"
+                                                                                   "McGoldrick"
+
+                                                                                   ;"Sterling"
+                                                                                   ;"Mané"
+                                                                                   ;"De Bruyne"
+                                                                                   ;"Abraham"
+                                                                                   ;"Ings"
+                                                                                   ;"Martial"
+                                                                                   ;"Alexander-Arnold"
+                                                                                   ;"Lundstram"
+                                                                                   ]))
+                                     (some #(= (:web_name player) %) ["Salah" "Agüero"]))
                                    false))
                                fpl-players)
         check-number-players-each-position (check-number-players-each-position fpl-players-per-mins)]
     (if (nil? check-number-players-each-position)
       (let [player-expected-values (merge-expected-values
-                                                                                fpl-players-per-mins
-                                                                                         statsbomb-player-data
-                                                                                         statsbomb-team-data)]
+                                     fpl-players-per-mins
+                                     statsbomb-player-data
+                                     statsbomb-team-data)]
         (doseq [player (sort-by :expected_value >
-                                (map #(select-keys % [:web_name :expected_value])
+                                (map #(select-keys % [:web_name :expected_value :current_team])
                                      player-expected-values))]
           (println player))
-        (json/write-str (merge (:body fpl-data) {:elements player-expected-values :total_matches_played 19})))
+        (json/write-str (merge (:body fpl-data) {:elements player-expected-values :total_matches_played 23})))
       (println check-number-players-each-position))))
 
 (defn handler [request]
@@ -88,4 +102,9 @@
    :headers {"Content-Type" "application/json"}
    :body (calculate-expected-values)})
 
-(defn -main [] (run-jetty handler {:port 3000}))
+(defn -main [] (run-jetty handler {:port 3001}))
+
+; McCarthy 4.3
+; Kiko Femenia 4.2
+; Dendoncker 4.4
+; Mousset 4.9
