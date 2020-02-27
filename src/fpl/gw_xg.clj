@@ -1,11 +1,11 @@
 (ns fpl.gw-xg
   (:require [fpl.gw-data :as gw-data]))
 
-(defn- team-xg-conceded [team-xg-conceded opposing-team-xg]
-  (+ team-xg-conceded (- opposing-team-xg 1)))
+(defn- team-xg-conceded [team-xg-conceded opposing-team-xg average-xg]
+  (* (/ opposing-team-xg average-xg) team-xg-conceded))
 
-(defn- player-xg [player-xg opposing-team-xg-conceded]
-  (let [xg-val (+ player-xg (- opposing-team-xg-conceded 1))]
+(defn- player-xg [player-xg opposing-team-xg-conceded average-xg-conceded]
+  (let [xg-val (* (/ opposing-team-xg-conceded average-xg-conceded) player-xg)]
     (if (< xg-val 0)
       0
       xg-val)))
@@ -35,16 +35,29 @@
                                                                                     gw-data/home-away-data)))
                                 (first (filter #(= opposing-team-id (:team_id %)) (:team-data-home
                                                                                     gw-data/home-away-data))))
+                average-xg-conceded (/ (reduce #(+ %1 %2)
+                                               (map #(:team_season_np_xg_conceded_pg %)
+                                                    (filter #(not (= (:team_id %) player-team-id))
+                                                            (if (= home-team-id player-team-id)
+                                                              (:team-data-away gw-data/home-away-data)
+                                                              (:team-data-home gw-data/home-away-data)))))
+                                       19)
+                ;log (if (= (:name player-data) "Mohamed Salah")
+                ;      (do (clojure.pprint/pprint average-xg-conceded)
+                ;          (clojure.pprint/pprint (:player_season_np_xg_90 player-data))))
                 player-xg-val (if (nil? player-data)
                                 0
                                 (player-xg (:player_season_np_xg_90 player-data)
-                                           (:team_season_np_xg_conceded_pg opposing-team)))
+                                           (:team_season_np_xg_conceded_pg opposing-team)
+                                           average-xg-conceded))
                 has-blank-gw? (some #(= player-team-id %) blanks)]
             (if (true? has-blank-gw?)
               (assoc player-data :player_season_xa_90 0
                                  :player_season_np_xg_90 0
                                  :player_season_gsaa_90 0)
-              (assoc player-data :player_season_np_xg_90 player-xg-val))))
+              (assoc player-data :player_season_np_xg_90 player-xg-val
+                                 :average-xg-conceded average-xg-conceded
+                                 :team_season_np_xg_conceded_pg (:team_season_np_xg_conceded_pg opposing-team)))))
         players))
 
 (defn- gw-team-xg [teams fixtures blanks]
@@ -67,11 +80,18 @@
                                                                                     gw-data/home-away-data)))
                                 (first (filter #(= opposing-team-id (:team_id %)) (:team-data-home
                                                                                     gw-data/home-away-data))))
+                average-xg (/ (reduce #(+ %1 %2)
+                                               (map #(:team_season_np_xg_pg %)
+                                                    (filter #(not (= (:team_id %) team-id))
+                                                            (if (= home-team-id team-id)
+                                                              (:team-data-away gw-data/home-away-data)
+                                                              (:team-data-home gw-data/home-away-data)))))
+                                       19)
                 team-xg-val (if (nil? team-data)
                               0
                               (team-xg-conceded (:team_season_np_xg_conceded_pg team-data)
-                                                  (:team_season_np_xg_pg
-                                                    opposing-team)))
+                                                (:team_season_np_xg_pg opposing-team)
+                                                average-xg))
                 has-blank-gw? (some #(= team-id %) blanks)
                 ;log (if (true? has-blank-gw?)
                 ;      (do (clojure.pprint/pprint team-data)
@@ -93,5 +113,5 @@
              :team-data (gw-team-xg team-data fixtures blanks)})
           gw-data/fixture-data)))
 
-;(clojure.pprint/pprint (first (filter #(= (:name %) "Andreas Pereira")  (:player-data (first expected-gw-points)))))
-;(clojure.pprint/pprint (first (filter #(= (:team_id %) 754)  (:team-data (first expected-gw-points)))))
+;(clojure.pprint/pprint (first (filter #(= (:name %) "Raúl Jiménez")  (:player-data (first expected-gw-points)))))
+;(clojure.pprint/pprint (first (filter #(= (:team_id %) 96)  (:team-data (first expected-gw-points)))))

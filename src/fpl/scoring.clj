@@ -4,7 +4,10 @@
 (def min-shots 1.5)
 
 (def rules
-  (let [gk-def-goal (fn [player-xg] (* player-xg 6))
+  (let [gk-def-goal (fn [player-xg]
+                      ;(if (> player-xg 0.5)
+                        ;(+ (/ (- player-xg 0.5) 2) 0.5)
+                        (* player-xg 6))
         mid-goal (fn [player-xg] (* player-xg 5))
         fwd-goal (fn [player-xg] (* player-xg 4))
         assist (fn [player-xa] (* player-xa 3))
@@ -12,7 +15,7 @@
                              (cond
                                (= team-xg-conceded 0) 0
                                (< team-xg-conceded 1) (- 4 (* team-xg-conceded 4))
-                               (> team-xg-conceded 2) (- 1 (/ (- 2 team-xg-conceded) 2))
+                               (>= team-xg-conceded 2) (- (/ (- 2 team-xg-conceded) 2) 1)
                                (>= team-xg-conceded 1) (- 1 team-xg-conceded)))]
 
         {
