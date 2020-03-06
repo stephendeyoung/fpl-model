@@ -62,13 +62,16 @@
    {:gw 27
     :player-data (read-statsbomb-data "statsbomb-player-data-gw27.edn")
     :team-data (read-statsbomb-data "statsbomb-team-data-gw27.edn")}
+   {:gw 28
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw28.edn")
+    :team-data (read-statsbomb-data "statsbomb-team-data-gw28.edn")}
    ])
 
 (def home-away-data
-  {:player-data-home (read-statsbomb-data "home_away_data/statsbomb-player-data-home-gw27.edn")
-   :player-data-away (read-statsbomb-data "home_away_data/statsbomb-player-data-away-gw27.edn")
-   :team-data-home (read-statsbomb-data "home_away_data/statsbomb-team-data-home-gw27.edn")
-   :team-data-away (read-statsbomb-data "home_away_data/statsbomb-team-data-away-gw27.edn")})
+  {:player-data-home (read-statsbomb-data "home_away_data/statsbomb-player-data-home-gw28.edn")
+   :player-data-away (read-statsbomb-data "home_away_data/statsbomb-player-data-away-gw28.edn")
+   :team-data-home (read-statsbomb-data "home_away_data/statsbomb-team-data-home-gw28.edn")
+   :team-data-away (read-statsbomb-data "home_away_data/statsbomb-team-data-away-gw28.edn")})
 
 (def fixtures
   (edn/read-string (slurp "resources/fixtures.edn")))
@@ -94,8 +97,10 @@
    {:gw 29
     :fixtures (filter (fn [fixture]
                         (and (.after (:date fixture) #inst "2020-03-07")
-                             (.before (:date fixture) #inst "2020-03-10")))
-                      fixtures)}
+                             (.before (:date fixture) #inst "2020-03-12")))
+                      fixtures)
+    :doubles [{:home-team-id 247
+               :away-team-id 178}]}
    {:gw 30
     :fixtures (filter (fn [fixture]
                         (and (.after (:date fixture) #inst "2020-03-14")
@@ -105,5 +110,6 @@
     :fixtures (filter (fn [fixture]
                         (and (.after (:date fixture) #inst "2020-03-20")
                              (.before (:date fixture) #inst "2020-03-23")))
-                      fixtures)}
+                      fixtures)
+    :blanks [247 178 666 168 152 122 88 754 102 110 199 118]}
    ])

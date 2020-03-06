@@ -14,15 +14,20 @@ df <- data %>%
   filter(web_name != "Jesus" & 
            #web_name != "Barnes" & 
            web_name != "Bernardo Silva"  &
-           web_name != "Lundstram" 
+           web_name != "Lundstram" &
            #web_name != "Sterling" & 
            #web_name != "Abraham" &
            #web_name != "Wood"
            #web_name != "Maddison" &
-           #web_name != "Otamendi" 
+           web_name != "David Silva" &
+           web_name != "Gündogan" &
+           #web_name != "Otamendi" &
            #web_name != "El Ghazi" &
           # web_name != "Martial" &
           # web_name != "Mount"
+         minutes >= 1200 | 
+        web_name == "Tanganga" |
+          web_name == "Agüero" 
          ) %>%
   mutate(now_cost = now_cost / 10) %>% 
   select(sort(names(.)))
@@ -35,9 +40,9 @@ num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-max_cost <- 100.7
+max_cost <- 101.4
 min_current_team <- 12
-keep_in_team <- 1
+keep_in_team <- 3
 discard_from_team <- 0
 
 # Create vectors to constrain by position
@@ -77,6 +82,7 @@ solution %>% summarise(total_price = sum(now_cost)) %>% print
 solution %>% summarise(total_points = sum(total_points)) %>% print
 solution %>% summarise(total_expected_points_per_90 = sum(expected_points_per_90)) %>% print
 solution %>% summarise(total_expected_points = sum(expected_points)) %>% print
+solution %>% summarise(expected.points.total = sum(expected.points.total)) %>% print
 
 def5 <- solution %>% filter(element_type == "2") %$% sum(expected_points_per_90) %>% first
 mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, expected_points_per_90) %$% sum(expected_points_per_90) %>% first
