@@ -6,7 +6,7 @@
             [fpl.gw-data :as gw-data]
             [fpl.gw-xg :as gw-xg]))
 
-(def total-matches-played 28)
+(def total-matches-played 29)
 (def minimum-minutes 0)
 (def gw-trend-window 5)
 (def ema-weighting 0.3)
@@ -16,11 +16,11 @@
 
 (defn- find-matching-sb-player [player statsbomb-data]
   (first (filter #(or (= (:player_opta_id %) (:code player))
-                      (= (:player_id player) (:player_id %))
-                      (= (:second_name player) (:player_last_name %))
-                      (if (not (nil? (:name %)))
-                        (= (:second_name player) (last (clojure.string/split (:name %) #" ")))
-                        false))
+                      (= (:player_id player) (:player_id %)))
+                      ;(= (:second_name player) (:player_last_name %))
+                      ;(if (not (nil? (:name %)))
+                      ;  (= (:second_name player) (last (clojure.string/split (:name %) #" ")))
+                      ;  false))
                  statsbomb-data)))
 
 (defn- check-number-players-each-position [players]
@@ -77,21 +77,21 @@
        players))
 
 (def current-team
-  [{:name "Jimenez" :player_opta_id 102057 :keep 0 :discard 0}
+  [{:name "Jiménez" :player_opta_id 102057 :keep 0 :discard 0}
    {:name "Calvert-Lewin" :player_opta_id 177815 :keep 0 :discard 0}
-   {:name "Ings" :player_opta_id 84939 :keep 0 :discard 0}
-   {:name "Pereira" :player_opta_id 156689 :keep 0 :discard 0}
+   {:name "Jota" :player_opta_id 194634 :keep 0}
+   {:name "Barnes" :player_opta_id 201666 :keep 0}
    {:name "Salah" :player_opta_id 118748 :keep 0 :discard 0}
-   {:name "Mané" :player_opta_id 110979 :keep 0}
+   {:name "De Bruyne" :player_opta_id 61366 :keep 0}
    {:name "Cantwell" :player_opta_id 193111 :keep 0 :discard 0}
-   {:name "Söyüncü" :player_opta_id 218031 :keep 0 :discard 0}
+   {:name "Doherty" :player_opta_id 87835 :keep 0}
    {:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
-   {:name "Tanganga" :player_opta_id 199584 :keep 1 :discard 0}
+   {:name "Tanganga" :player_opta_id 199584 :keep 0 :discard 0}
    {:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
    {:name "Ryan" :player_opta_id 131897 :keep 0 :discard 0}
    {:name "Schmeichel" :player_opta_id 17745 :keep 0 :discard 0}
    {:name "Perez" :player_opta_id 168580 :keep 0 :discard 0}
-   {:name "Maguire" :player_opta_id 95658 :keep 0 :discard 0}])
+   {:name "Otamendi" :player_opta_id 57410 :keep 0 :discard 0}])
 
 (def wanted-players
   [
@@ -100,10 +100,10 @@
    ;{:name "Robertson" :player_opta_id 122798 :keep 1}
    ;{:name "Firmino" :player_opta_id 92217 :keep 1}
    ;{:name "Mousset" :player_opta_id 178304 :keep 1}
-   {:name "Jota" :player_opta_id 194634 :keep 1}
-   {:name "Doherty" :player_opta_id 87835 :keep 1}
-   ;{:name "De Bruyne" :player_opta_id 61366 :keep 1}
-   ;{:name "Barnes" :player_opta_id 201666 :keep 1}
+
+   {:name "McCarthy" :player_opta_id 58376 :keep 1}
+   ;{:name "McCarthy" :player_opta_id 83428 :keep 1}
+   ;{:name "Douglas Luiz" :player_opta_id 230046 :keep 1}
    ])
 
 (defn- find-in-curr-team [player]
@@ -124,13 +124,13 @@
 
 (defn- calculate-ema [player]
   (let [keys [:gw09 :gw10 :gw11 :gw12 :gw13 :gw14 :gw15 :gw16 :gw17 :gw18 :gw19 :gw20 :gw21 :gw22 :gw23 :gw24 :gw25
-              :gw26 :gw27 :gw28]
+              :gw26 :gw27 :gw28 :gw29]
         pts-per-week (filter #(not (nil? %)) (map #(% player) keys))]
     (last (ema3 pts-per-week ema-weighting))))
 
 (defn- calculate-trend [player]
   (let [keys [:gw09 :gw10 :gw11 :gw12 :gw13 :gw14 :gw15 :gw16 :gw17 :gw18 :gw19 :gw20 :gw21 :gw22 :gw23 :gw24 :gw25
-              :gw26 :gw27 :gw28]
+              :gw26 :gw27 :gw28 :gw29]
         pts-per-week (filter #(not (nil? %)) (map #(% player) keys))]
     (- (last pts-per-week) (first (take-last gw-trend-window pts-per-week)))))
 
@@ -138,7 +138,8 @@
   (get-fpl-data))
 
 (def fpl-players
-  (-> fpl-data
+  ;(filter #(= (:web_name %) "Jiménez")
+          (-> fpl-data
       :body
       :elements))
 
@@ -169,6 +170,8 @@
               gw-list1))
           (reverse player-expected-points-per-gw)))
 
+;(clojure.pprint/pprint (first (filter #(= (:web_name %) "Jiménez")  player-expected-points-joined)))
+
 (def players-with-ema
   (mapv (fn [player]
           (assoc player :ema (calculate-ema player)
@@ -194,15 +197,34 @@
 
 (def player-expected-points-future-gws-total
   (mapv (fn [player]
-          (assoc player :expected-points-total (+ (if (nil? (:gw29-expected-points player))
+          (assoc player :expected-points-total (+
+                                                 (if (nil? (:gw30-expected-points player))
+                                                   0
+                                                   (:gw30-expected-points player))
+                                                 (if (nil? (:gw31-expected-points player))
+                                                   0
+                                                   (:gw31-expected-points player))
+                                                 (if (nil? (:gw32-expected-points player))
+                                                   0
+                                                   (:gw32-expected-points player))
+                                                 (if (nil? (:gw33-expected-points player))
+                                                   0
+                                                   (:gw33-expected-points player))
+                                                 (if (nil? (:gw34-expected-points player))
+                                                   0
+                                                   (:gw34-expected-points player))
+                                                 (if (nil? (:gw35-expected-points player))
+                                                   0
+                                                   (:gw35-expected-points player))
+                                                 (if (nil? (:gw36-expected-points player))
                                                     0
-                                                    (:gw29-expected-points player))
-                                                  (if (nil? (:gw30-expected-points player))
+                                                    (:gw36-expected-points player))
+                                                  (if (nil? (:gw37-expected-points player))
                                                     0
-                                                    (:gw30-expected-points player))
-                                                  (if (nil? (:gw31-expected-points player))
+                                                    (:gw37-expected-points player))
+                                                  (if (nil? (:gw38-expected-points player))
                                                     0
-                                                    (:gw31-expected-points player)))))
+                                                    (:gw38-expected-points player)))))
         player-expected-points-future-gws-joined))
 
 (def fpl-players-per-mins
@@ -248,10 +270,13 @@
                                                            :total_points :minutes
                                                            :current_team :expected_points :team_code :keep :gw09 :gw10 :gw11 :gw12 :gw13
                                                            :gw14 :gw15 :gw16 :gw17 :gw18 :gw19 :gw20 :gw21 :gw22 :gw23 :gw24 :gw25
-                                                           :gw26 :gw27 :gw28
-                                                           :discard :ema :trend :gw29-expected-points :gw30-expected-points
-                                                           :gw31-expected-points :expected-points-total])]
-                             (assoc plyr :expected_points_per_90 (:gw28 plyr))))
+                                                           :gw26 :gw27 :gw28 :gw29
+                                                           :discard :ema :trend :gw30-expected-points
+                                                           :gw31-expected-points
+                                                           :gw36-expected-points
+                                                           :gw37-expected-points :gw38-expected-points
+                                                           :expected-points-total])]
+                             (assoc plyr :expected_points_per_90 (:gw29 plyr))))
                          fpl-players-with-curr-team)]
         (json/write-str (merge (:body fpl-data) {:elements players :total_matches_played total-matches-played})))
       (println check-number-players-each-position))))

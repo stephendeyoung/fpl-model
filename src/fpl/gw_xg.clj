@@ -32,7 +32,10 @@
                                                             (if (= home-team-id player-team-id)
                                                               (:team-data-away gw-data/home-away-data)
                                                               (:team-data-home gw-data/home-away-data)))))
-                                       19)]
+                                       19)
+                ;log (if (= (:name player) "Mohamed Salah")
+                ;      (println average-xg-conceded))
+                ]
             {:player-data         player-data
              :opposing-team       opposing-team
              :average-xg-conceded average-xg-conceded}))
@@ -52,11 +55,17 @@
                                                                                 gw-data/home-away-data))))
                 average-xg (/ (reduce #(+ %1 %2)
                                       (map #(:team_season_np_xg_pg %)
-                                           (filter #(not (= (:team_id %) team-id))
-                                                   (if (= home-team-id team-id)
-                                                     (:team-data-away gw-data/home-away-data)
-                                                     (:team-data-home gw-data/home-away-data)))))
-                              19)]
+                                           (filter (fn [other-team]
+                                                     (not (= (:team_id other-team) (:team_id opposing-team))))
+                                                   (if (= home-team-id (:team_id opposing-team))
+                                                     (:team-data-home gw-data/home-away-data)
+                                                     (:team-data-away gw-data/home-away-data)))))
+                              19)
+                ;log (when (= (:team_name team) "Manchester United")
+                ;      (println "man u xg:")
+                ;      (println average-xg)
+                ;      (println "\n"))
+                ]
             {:team-data     team-data
              :opposing-team opposing-team
              :average-xg    average-xg}))
@@ -76,7 +85,6 @@
         :else (+ (:player_season_gsaa_90 player-dataA)
                  (:player_season_gsaa_90 player-dataB))))
 
-; THIS DOESN'T WORK FOR DOUBLE GAMEWEEKS!!!
 (defn- gw-player-xg [players fixtures blanks doubles]
   (mapv (fn [player]
           (let [player-team-id (:team_id player)
@@ -123,28 +131,32 @@
                 ;                                              (:team-data-away gw-data/home-away-data)
                 ;                                              (:team-data-home gw-data/home-away-data)))))
                 ;                       19)
-                ;log (if (= (:name player-data) "Mohamed Salah")
-                ;      (do (clojure.pprint/pprint average-xg-conceded)
-                ;          (clojure.pprint/pprint (:player_season_np_xg_90 player-data))))
                 player-xg-val (reduce #(+ %1 %2)
                                       (mapv (fn [{:keys [player-data opposing-team average-xg-conceded]}]
+                                              ;(when (= (:name player-data) "Mohamed Salah")
+                                              ;  (println average-xg-conceded)
+                                              ;  (println (:player_season_np_xg_90 player-data))
+                                              ;  (println (:team_season_np_xg_conceded_pg opposing-team)))
                                               (if (nil? player-data)
                                                 0
                                                 (player-xg (:player_season_np_xg_90 player-data)
                                                            (:team_season_np_xg_conceded_pg opposing-team)
                                                            average-xg-conceded)))
                                             player-datas))
+                ;log (when (= (:name player) "Mohamed Salah")
+                ;      (println player-xg-val))
                 has-blank-gw? (some #(= player-team-id %) blanks)]
-            (if (true? has-blank-gw?)
-              (assoc (:player-data (first player-datas)) :player_season_xa_90 0
-                                          :player_season_np_xg_90 0
-                                          :player_season_gsaa_90 0)
-              (reduce (fn [player-dataA player-dataB]
-                        (assoc player-dataA
-                          :player_season_np_xg_90 player-xg-val
-                          :player_season_xa_90 (calculate-xa player-dataA player-dataB)
-                          :player_season_gsaa_90 (calculate-gsaa player-dataA player-dataB)))
-                      (mapv #(:player-data %) player-datas)))))
+            (cond
+              (true? has-blank-gw?) (assoc (:player-data (first player-datas)) :player_season_xa_90 0
+                                                                               :player_season_np_xg_90 0
+                                                                               :player_season_gsaa_90 0)
+              (> (count player-datas) 1) (reduce (fn [player-dataA player-dataB]
+                                                   (assoc player-dataA
+                                                     :player_season_np_xg_90 player-xg-val
+                                                     :player_season_xa_90 (calculate-xa player-dataA player-dataB)
+                                                     :player_season_gsaa_90 (calculate-gsaa player-dataA player-dataB)))
+                                                 (mapv #(:player-data %) player-datas))
+              :else (assoc (:player-data (first player-datas)) :player_season_np_xg_90 player-xg-val))))
         players))
 
 (defn- gw-team-xg [teams fixtures blanks doubles]
@@ -155,12 +167,12 @@
                 ;                                                 (= team-id (:away_team_id %)))
                 ;                                            fixtures))
                 matches (concat [(clojure.set/rename-keys
-                                  (select-keys (first (filter #(or (= team-id (:home_team_id %))
-                                                                   (= team-id (:away_team_id %)))
-                                                              fixtures))
-                                               [:home_team_id :away_team_id])
-                                  {:home_team_id :home-team-id
-                                   :away_team_id :away-team-id})]
+                                   (select-keys (first (filter #(or (= team-id (:home_team_id %))
+                                                                    (= team-id (:away_team_id %)))
+                                                               fixtures))
+                                                [:home_team_id :away_team_id])
+                                   {:home_team_id :home-team-id
+                                    :away_team_id :away-team-id})]
                                 (filter (fn [match] (if (or (= (:home-team-id match) team-id)
                                                             (= (:away-team-id match) team-id))
                                                       true
@@ -188,12 +200,19 @@
                 ;              19)
                 team-datas (collect-team-data team team-id matches)
                 team-xg-vals (mapv (fn [{:keys [team-data opposing-team average-xg]}]
+                                     ;(when (= (:team_name team) "Arsenal")
+                                     ;  ;(println (:team_season_np_xg_conceded_pg team-data))
+                                     ;  ;(println (:team_season_np_xg_pg opposing-team))
+                                     ;  (println average-xg))
                                      (if (nil? team-data)
                                        0
                                        (team-xg-conceded (:team_season_np_xg_conceded_pg team-data)
                                                          (:team_season_np_xg_pg opposing-team)
                                                          average-xg)))
                                    team-datas)
+                ;log (when (= (:team_name team) "Crystal Palace")
+                ;      (println "\n")
+                ;      (println team-xg-vals))
                 has-blank-gw? (some #(= team-id %) blanks)
                 ;log (if (true? has-blank-gw?)
                 ;      (do (clojure.pprint/pprint team-data)
@@ -216,5 +235,5 @@
           gw-data/fixture-data)))
 
 
-;(clojure.pprint/pprint (first (filter #(= (:name %) "Raúl Jiménez")  (:player-data (first expected-gw-points)))))
-;(clojure.pprint/pprint (first (filter #(= (:team_id %) 96)  (:team-data (first expected-gw-points)))))
+;(clojure.pprint/pprint (first (filter #(= (:name %) "Danny Ings") (:player-data (first expected-gw-points)))))
+;(clojure.pprint/pprint (first (filter #(= (:team_id %) 733) (:team-data (first expected-gw-points)))))

@@ -65,13 +65,16 @@
    {:gw 28
     :player-data (read-statsbomb-data "statsbomb-player-data-gw28.edn")
     :team-data (read-statsbomb-data "statsbomb-team-data-gw28.edn")}
+   {:gw 29
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw29.edn")
+    :team-data (read-statsbomb-data "statsbomb-team-data-gw29.edn")}
    ])
 
 (def home-away-data
-  {:player-data-home (read-statsbomb-data "home_away_data/statsbomb-player-data-home-gw28.edn")
-   :player-data-away (read-statsbomb-data "home_away_data/statsbomb-player-data-away-gw28.edn")
-   :team-data-home (read-statsbomb-data "home_away_data/statsbomb-team-data-home-gw28.edn")
-   :team-data-away (read-statsbomb-data "home_away_data/statsbomb-team-data-away-gw28.edn")})
+  {:player-data-home (read-statsbomb-data "home_away_data/statsbomb-player-data-home-gw29.edn")
+   :player-data-away (read-statsbomb-data "home_away_data/statsbomb-player-data-away-gw29.edn")
+   :team-data-home (read-statsbomb-data "home_away_data/statsbomb-team-data-home-gw29.edn")
+   :team-data-away (read-statsbomb-data "home_away_data/statsbomb-team-data-away-gw29.edn")})
 
 (def fixtures
   (edn/read-string (slurp "resources/fixtures.edn")))
@@ -94,13 +97,13 @@
    ;                          (.before (:date fixture) #inst "2020-03-02")))
    ;                   fixtures)
    ; :blanks [102 247 152 178]}
-   {:gw 29
-    :fixtures (filter (fn [fixture]
-                        (and (.after (:date fixture) #inst "2020-03-07")
-                             (.before (:date fixture) #inst "2020-03-12")))
-                      fixtures)
-    :doubles [{:home-team-id 247
-               :away-team-id 178}]}
+   ;{:gw 29
+   ; :fixtures (filter (fn [fixture]
+   ;                     (and (.after (:date fixture) #inst "2020-03-07")
+   ;                          (.before (:date fixture) #inst "2020-03-12")))
+   ;                   fixtures)
+   ; :doubles [{:home-team-id 247
+   ;            :away-team-id 178}]}
    {:gw 30
     :fixtures (filter (fn [fixture]
                         (and (.after (:date fixture) #inst "2020-03-14")
@@ -112,4 +115,39 @@
                              (.before (:date fixture) #inst "2020-03-23")))
                       fixtures)
     :blanks [247 178 666 168 152 122 88 754 102 110 199 118]}
+   {:gw 32
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-04-04")
+                             (.before (:date fixture) #inst "2020-04-05")))
+                      fixtures)}
+   {:gw 33
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-04-11")
+                             (.before (:date fixture) #inst "2020-04-12")))
+                      fixtures)}
+   {:gw 34
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-04-18")
+                             (.before (:date fixture) #inst "2020-04-19")))
+                      fixtures)}
+   {:gw 35
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-04-25")
+                             (.before (:date fixture) #inst "2020-04-26")))
+                      fixtures)}
+   {:gw 36
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-05-02")
+                             (.before (:date fixture) #inst "2020-05-03")))
+                      fixtures)}
+   {:gw 37
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-05-09")
+                             (.before (:date fixture) #inst "2020-05-10")))
+                      fixtures)}
+   {:gw 38
+    :fixtures (filter (fn [fixture]
+                        (and (.after (:date fixture) #inst "2020-05-17")
+                             (.before (:date fixture) #inst "2020-05-18")))
+                      fixtures)}
    ])
