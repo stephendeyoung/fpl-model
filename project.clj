@@ -10,4 +10,5 @@
                  [ring/ring-core "1.6.3"]
                  [ring/ring-jetty-adapter "1.6.3"]]
   :repl-options {:init-ns fpl.core}
-  :plugins [[lein-cljfmt "0.6.4"]])
+  :plugins [[lein-cljfmt "0.6.4"]]
+  :resource-paths ["../resources"])

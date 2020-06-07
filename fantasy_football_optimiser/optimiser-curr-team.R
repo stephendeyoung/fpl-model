@@ -11,7 +11,10 @@ data <- "http://localhost:3000/" %>%
 df <- data %>% 
   .$elements %>% 
   data.frame %>% 
-  filter(minutes >= 1260) %>%
+  filter(web_name != 'Jesus' &
+         web_name != 'Ederson' &
+         minutes >= 1260 |
+         web_name == 'Tanganga') %>%
   mutate(now_cost = now_cost / 10) %>% 
   select(sort(names(.)))
 
@@ -23,9 +26,9 @@ num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-max_cost <- 100
+max_cost <- 100.5
 min_current_team <- 0
-keep_in_team <- 0
+keep_in_team <- 5
 discard_from_team <- 0
 
 # Create vectors to constrain by position
