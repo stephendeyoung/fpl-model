@@ -1,5 +1,6 @@
 (ns fpl.gw-xg
-  (:require [fpl.gw-data :as gw-data]))
+  (:require [fpl.gw-data :as gw-data]
+            [clojure.set :as set]))
 
 (defn- team-xg-conceded [team-xg-conceded opposing-team-xg average-xg]
   (* (/ opposing-team-xg average-xg) team-xg-conceded))
@@ -89,7 +90,7 @@
 (defn- gw-player-xg [players fixtures blanks doubles home-away-data]
   (mapv (fn [player]
           (let [player-team-id (:team_id player)
-                match [(clojure.set/rename-keys
+                match [(set/rename-keys
                          (select-keys (first (filter #(or (= player-team-id (:home_team_id %))
                                                           (= player-team-id (:away_team_id %)))
                                                      fixtures))

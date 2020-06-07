@@ -1,15 +1,12 @@
 (ns fpl.core-all-gws
-  (:require [clj-http.client :as client]
-            [fpl.scoring :refer [rules]]
+  (:require [fpl.scoring :refer [rules]]
             [fpl.gw-data :as gw-data]
-            [fpl.gw-xg :as gw-xg]))
+            [fpl.gw-xg :as gw-xg]
+            [clojure.pprint :refer [pprint]]))
 
 (def total-matches-played 29)
 (def gw-trend-window 5)
 (def ema-weighting 0.3)
-
-(defn- get-fpl-data []
-  (client/get "https://fantasy.premierleague.com/api/bootstrap-static/" {:as :json}))
 
 (defn- find-matching-sb-player [player statsbomb-data]
   (first (filter #(or (= (:player_opta_id %) (:code player))
@@ -141,21 +138,16 @@
 (defn- build-expected-pts-str [data]
   (str (build-gw-str data) "-expected-points"))
 
-(def fpl-data
-  (get-fpl-data))
-
-(def fpl-players
+(defn fpl-players [fpl-data]
   ;(filter #(= (:web_name %) "Jiménez")
-  (-> fpl-data
-      :body
-      :elements))
+  (:elements fpl-data))
 
-(defn- add-fpl-players-with-sb-id [filtered-gw-data]
+(defn- add-fpl-players-with-sb-id [fpl-data filtered-gw-data]
   (println "add-fpl-players-with-sb-id")
   (mapv (fn [player]
           (assoc player :player_id (:player_id (find-matching-sb-player player (:player-data (last filtered-gw-data))
                                                                         ))))
-        fpl-players))
+        (fpl-players fpl-data)))
 
 (defn- add-player-expected-points-per-gw [filtered-gw-data fpl-players-with-sb-id]
   (mapv (fn [data]
@@ -221,9 +213,9 @@
             (assoc player :expected-points-total expected-points-total)))
         player-expected-points-future-gws-joined))
 
-(defn calculate-expected-values [to-gw latest-fixture fixtures]
+(defn calculate-expected-values [fpl-data to-gw latest-fixture fixtures]
   (let [filtered-gw-data (filter #(<= (:gw %) to-gw) gw-data/gameweek-data)
-        fpl-players-with-sb-id (add-fpl-players-with-sb-id filtered-gw-data)
+        fpl-players-with-sb-id (add-fpl-players-with-sb-id fpl-data filtered-gw-data)
         player-expected-points-per-gw (add-player-expected-points-per-gw filtered-gw-data fpl-players-with-sb-id)
         player-expected-points-joined (join-expected-points player-expected-points-per-gw)
         players-ema (add-players-ema player-expected-points-joined)
@@ -253,7 +245,8 @@
                                                            :gw36-expected-points
                                                            :gw37-expected-points :gw38-expected-points
                                                            :expected-points-total])]
-                             (assoc plyr :expected_points_per_90 (:gw29 plyr))))
+                             (assoc plyr :expected_points_per_90
+                                         ((keyword (str "gw" latest-fixture)) plyr))))
                          fpl-players-with-curr-team)]
         (merge (:body fpl-data) {:elements players :total_matches_played total-matches-played}))
       (println check-number-players-each-position))))
