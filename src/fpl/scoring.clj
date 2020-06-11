@@ -22,14 +22,16 @@
                                            team-xg-concededs)))]
 
     {
-     :gk-scores  (fn [team-xg-conceded gsaa]
+     :gk-scores  (fn [team-xg-conceded gsaa appearance-pts]
                    (+ (gk-def-clean-sheet team-xg-conceded)
-                      gsaa))
-     :def-scores (fn [player-xg player-xga team-xg-conceded]
+                      gsaa
+                      appearance-pts))
+     :def-scores (fn [player-xg player-xga team-xg-conceded appearance-pts]
                    (+ (gk-def-goal player-xg)
                       (gk-def-clean-sheet team-xg-conceded)
-                      (assist player-xga)))
-     :mid-scores (fn [player-xg player-xga team-xg-concededs player-shots player-conversion]
+                      (assist player-xga)
+                      appearance-pts))
+     :mid-scores (fn [player-xg player-xga team-xg-concededs appearance-pts player-shots player-conversion]
                    (+ (mid-goal player-xg)
                       (reduce #(+ %1 %2)
                               (mapv (fn [team-xg-conceded]
@@ -39,13 +41,15 @@
                                         (< team-xg-conceded 1) (- 1 team-xg-conceded)
                                         :else 0))
                                     team-xg-concededs))
-                      (assist player-xga)))
+                      (assist player-xga)
+                      appearance-pts))
      ;(if (or (< player-shots min-shots) (<= player-conversion base-conversion))
      ;  0
      ;  (* (- player-conversion base-conversion) 5))))
-     :fwd-scores (fn [player-xg player-xga player-shots player-conversion]
+     :fwd-scores (fn [player-xg player-xga appearance-pts player-shots player-conversion]
                    (+ (fwd-goal player-xg)
-                      (assist player-xga)))
+                      (assist player-xga)
+                      appearance-pts))
      ;(if (or (< player-shots min-shots) (<= player-conversion base-conversion))
      ;  0
      ;  (* (- player-conversion base-conversion) 4))))

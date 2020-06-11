@@ -92,30 +92,35 @@
            ;                     (and (.after (:date fixture) #inst "2020-02-22")
            ;                          (.before (:date fixture) #inst "2020-02-25")))
            ;                   fixtures)}
-           ;{:gw 28
-           ; :fixtures (filter (fn [fixture]
-           ;                     (and (.after (:date fixture) #inst "2020-02-28")
-           ;                          (.before (:date fixture) #inst "2020-03-02")))
-           ;                   fixtures)
-           ; :blanks [102 247 152 178]}
-           ;{:gw 29
-           ; :fixtures (filter (fn [fixture]
-           ;                     (and (.after (:date fixture) #inst "2020-03-07")
-           ;                          (.before (:date fixture) #inst "2020-03-12")))
-           ;                   fixtures)
-           ; :doubles [{:home-team-id 247
-           ;            :away-team-id 178}]}
+           {:gw 28
+            :fixtures (filter (fn [fixture]
+                                (and (.after (:date fixture) #inst "2020-02-28")
+                                     (.before (:date fixture) #inst "2020-03-02")))
+                              fixtures)
+            :blanks [102 247 152 178]}
+           {:gw 29
+            :fixtures (filter (fn [fixture]
+                                (and (.after (:date fixture) #inst "2020-03-07")
+                                     (.before (:date fixture) #inst "2020-03-12")))
+                              fixtures)
+            :doubles [{:home-team-id 247
+                       :away-team-id 178}]}
            {:gw       30
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-03-14")
                                      (.before (:date fixture) #inst "2020-03-17")))
-                              fixtures)}
+                              fixtures)
+            :doubles [{:home-team-id 247
+                       :away-team-id 178}
+                      {:home-team-id 152
+                       :away-team-id 102}]}
            {:gw       31
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-03-20")
                                      (.before (:date fixture) #inst "2020-03-23")))
                               fixtures)
-            :blanks   [247 178 666 168 152 122 88 754 102 110 199 118]}
+            ;:blanks   [247 178 666 168 152 122 88 754 102 110 199 118]
+            }
            {:gw       32
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-04-04")

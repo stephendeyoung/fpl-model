@@ -10,9 +10,12 @@
 (def fpl-data
   (:body (get-fpl-data)))
 
+(def results
+  (calculate-expected-values fpl-data 30 29 [30] false))
+
 (defn handler [request]
   {:status  200
    :headers {"Content-Type" "application/json"}
-   :body    (json/write-str (calculate-expected-values fpl-data 38 29 [30 31 32 33 34 35 36 37 38]))})
+   :body    (json/write-str results)})
 
 (defn -main [] (run-jetty handler {:port 3000}))

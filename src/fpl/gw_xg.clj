@@ -1,6 +1,7 @@
 (ns fpl.gw-xg
   (:require [fpl.gw-data :as gw-data]
-            [clojure.set :as set]))
+            [clojure.set :as set]
+            [clojure.pprint :refer [pprint]]))
 
 (defn- team-xg-conceded [team-xg-conceded opposing-team-xg average-xg]
   (* (/ opposing-team-xg average-xg) team-xg-conceded))
@@ -75,14 +76,18 @@
 
 (defn- calculate-xa [player-dataA player-dataB]
   ; some players may have home data but not away data or vice versa
-  (cond (nil? player-dataA) (* (:player_season_xa_90 player-dataB) 2)
+  (cond (and (nil? player-dataA)
+             (nil? player-dataB)) 0
+        (nil? player-dataA) (* (:player_season_xa_90 player-dataB) 2)
         (nil? player-dataB) (* (:player_season_xa_90 player-dataA) 2)
         :else (+ (:player_season_xa_90 player-dataA)
                  (:player_season_xa_90 player-dataB))))
 
 (defn- calculate-gsaa [player-dataA player-dataB]
   ; some players may have home data but not away data or vice versa
-  (cond (nil? player-dataA) (* (:player_season_gsaa_90 player-dataB) 2)
+  (cond (and (nil? player-dataA)
+             (nil? player-dataB)) 0
+        (nil? player-dataA) (* (:player_season_gsaa_90 player-dataB) 2)
         (nil? player-dataB) (* (:player_season_gsaa_90 player-dataA) 2)
         :else (+ (:player_season_gsaa_90 player-dataA)
                  (:player_season_gsaa_90 player-dataB))))
@@ -151,12 +156,14 @@
             (cond
               (true? has-blank-gw?) (assoc (:player-data (first player-datas)) :player_season_xa_90 0
                                                                                :player_season_np_xg_90 0
-                                                                               :player_season_gsaa_90 0)
+                                                                               :player_season_gsaa_90 0
+                                                                               :blank_gw true)
               (> (count player-datas) 1) (reduce (fn [player-dataA player-dataB]
                                                    (assoc player-dataA
                                                      :player_season_np_xg_90 player-xg-val
                                                      :player_season_xa_90 (calculate-xa player-dataA player-dataB)
-                                                     :player_season_gsaa_90 (calculate-gsaa player-dataA player-dataB)))
+                                                     :player_season_gsaa_90 (calculate-gsaa player-dataA player-dataB)
+                                                     :double_gw true))
                                                  (mapv #(:player-data %) player-datas))
               :else (assoc (:player-data (first player-datas)) :player_season_np_xg_90 player-xg-val))))
         players))

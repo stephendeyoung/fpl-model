@@ -8,7 +8,8 @@
                  [cheshire "5.9.0"]
                  [org.clojure/data.json "0.2.6"]
                  [ring/ring-core "1.6.3"]
-                 [ring/ring-jetty-adapter "1.6.3"]]
-  :repl-options {:init-ns fpl.core}
+                 [ring/ring-jetty-adapter "1.6.3"]
+                 [org.clojure/data.csv "1.0.0"]]
+  :repl-options {}
   :plugins [[lein-cljfmt "0.6.4"]]
   :resource-paths ["../resources"])

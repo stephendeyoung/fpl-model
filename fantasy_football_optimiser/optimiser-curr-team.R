@@ -11,8 +11,10 @@ data <- "http://localhost:3000/" %>%
 df <- data %>% 
   .$elements %>% 
   data.frame %>% 
-  filter(web_name != 'Jesus' &
-         web_name != 'Ederson' &
+  filter(
+         #web_name != 'Jesus' &
+         #web_name != 'Bernardo Silva' &   
+         web_name != 'McGoldrick' &   
          minutes >= 1260 |
          web_name == 'Tanganga') %>%
   mutate(now_cost = now_cost / 10) %>% 
@@ -26,9 +28,9 @@ num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-max_cost <- 100.5
+max_cost <- 100.4
 min_current_team <- 0
-keep_in_team <- 5
+keep_in_team <- 1
 discard_from_team <- 0
 
 # Create vectors to constrain by position
@@ -54,32 +56,32 @@ const_rhs <- c(num_gk, num_def, num_mid, num_fwd, max_cost, min_current_team, ke
 # then solve the matrix
 x <- lp ("max", objective, const_mat, const_dir, const_rhs, all.bin=TRUE, all.int=TRUE)
 
-df$expected_points <- (df$expected_points_per_90 + 2) * data$total_matches_played
+#df$expected_points <- (df$expected_points_per_90 + 2) * data$total_matches_played
 # And this is our team!
 solution <- df %>% 
   mutate(solution = x$solution) %>% 
   filter(solution == 1) %>% 
   select(web_name, 
-         expected_points_per_90,
+         #expected_points_per_90,
          expected.points.total, 
-         element_type, 
+         #element_type, 
          now_cost, 
          total_points,
-         gw36.expected.points, 
-         expected_points, 
-         minutes, 
-         current_team, 
-         trend
+         #gw30.expected.points, 
+         #expected_points, 
+         #minutes, 
+         #current_team, 
+         #trend
          ) %>% 
   arrange(desc(expected.points.total))
 
 print(solution)
 
 solution %>% summarise(total_price = sum(now_cost)) %>% print
-solution %>% summarise(total_points = sum(total_points)) %>% print
-solution %>% summarise(total_expected_points_per_90 = sum(expected_points_per_90)) %>% print
-solution %>% summarise(total_expected_points = sum(expected_points)) %>% print
 solution %>% summarise(expected.points.total = sum(expected.points.total)) %>% print
+solution %>% summarise(total_points_scored = sum(total_points)) %>% print
+solution %>% summarise(total_expected_points_per_90 = sum(expected_points_per_90)) %>% print
+#solution %>% summarise(total_expected_points = sum(expected_points)) %>% print
 
 def5 <- solution %>% filter(element_type == "2") %$% sum(expected.points.total) %>% first
 mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, expected.points.total) %$% sum(expected.points.total) %>% first
