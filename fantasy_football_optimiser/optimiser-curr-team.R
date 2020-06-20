@@ -12,13 +12,23 @@ df <- data %>%
   .$elements %>% 
   data.frame %>% 
   filter(
-         #web_name != 'Jesus' &
+         #web_name != 'Otamendi' &
          #web_name != 'Bernardo Silva' &   
+         #web_name != 'Ederson' &
+         #web_name != 'Walker' & 
+         #web_name != 'Jesus' &    
+         #web_name != 'Targett' &
+         #web_name != 'Fernández' &
          web_name != 'McGoldrick' &   
+         #web_name != 'Lundstram' &
+         #web_name != 'O\'Connell' &   
          minutes >= 1260 |
          web_name == 'Tanganga') %>%
   mutate(now_cost = now_cost / 10) %>% 
   select(sort(names(.)))
+
+df$points_per_90 <- (df$total_points / df$minutes) * 90
+df$bonus_per_90 <- ((df$bonus / df$minutes) * 90)
 
 # The vector to optimize on
 objective <- df$expected.points.total
@@ -28,9 +38,9 @@ num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-max_cost <- 100.4
+max_cost <- 99.4
 min_current_team <- 0
-keep_in_team <- 1
+keep_in_team <- 2
 discard_from_team <- 0
 
 # Create vectors to constrain by position
@@ -62,16 +72,19 @@ solution <- df %>%
   mutate(solution = x$solution) %>% 
   filter(solution == 1) %>% 
   select(web_name, 
-         #expected_points_per_90,
+         points_per_90,
+         bonus.pts,
+         bonus_per_90,
+         expected_points_per_90,
          expected.points.total, 
-         #element_type, 
+         element_type, 
          now_cost, 
          total_points,
          #gw30.expected.points, 
          #expected_points, 
-         #minutes, 
-         #current_team, 
-         #trend
+         minutes, 
+         current_team, 
+         trend
          ) %>% 
   arrange(desc(expected.points.total))
 

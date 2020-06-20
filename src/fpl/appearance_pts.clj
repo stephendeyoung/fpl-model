@@ -1,20 +1,7 @@
 (ns fpl.appearance-pts
-  (:require [clojure.data.csv :as csv]
-            [clojure.java.io :as io]))
+  (:require [fpl.fpl-data-csv :refer [fpl-csv-data]]))
 
 (def ema-weighting 0.2)
-
-(defn- read-csv []
-  (with-open [reader (io/reader "../resources/fpl_data/all-gws-to-29.csv")]
-    (doall
-      (csv/read-csv reader))))
-
-(defn- csv-data->maps [csv-data]
-  (map zipmap
-       (->> (first csv-data)                                ;; First row is the header
-            (map keyword)                                   ;; Drop if you want string keys instead
-            repeat)
-       (rest csv-data)))
 
 (defn- ema3 [c a]
   (loop [ct (rest c) res [(first c)]]
@@ -28,12 +15,7 @@
 
 
 (def player-appearance-pts
-  (->> (read-csv)
-       csv-data->maps
-       (map (fn [csv-record]
-              (-> csv-record
-                  (update :minutes #(Long/parseLong %))
-                  (update :element #(Long/parseLong %)))))
+  (->> fpl-csv-data
        (map (fn [record]
               (select-keys record [:name :element :GW :minutes])))
        ;(group-by (juxt :element :GW))

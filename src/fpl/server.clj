@@ -2,16 +2,20 @@
   (:require [fpl.core-all-gws :refer [calculate-expected-values]]
             [ring.adapter.jetty :refer [run-jetty]]
             [clojure.data.json :as json]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [clojure.edn :as edn]))
 
 (defn- get-fpl-data []
   (client/get "https://fantasy.premierleague.com/api/bootstrap-static/" {:as :json}))
+
+(def fixtures
+  (edn/read-string (slurp "../resources/fixtures.edn")))
 
 (def fpl-data
   (:body (get-fpl-data)))
 
 (def results
-  (calculate-expected-values fpl-data 30 29 [30] false))
+  (calculate-expected-values fpl-data fixtures 31 29 [31 32 33 34 35 36 37] :ignore-appearances false :test? false))
 
 (defn handler [request]
   {:status  200

@@ -1,7 +1,8 @@
 (ns fpl.gw-xg
   (:require [fpl.gw-data :as gw-data]
             [clojure.set :as set]
-            [clojure.pprint :refer [pprint]]))
+            [clojure.pprint :refer [pprint]]
+            [fpl.bonus-pts :refer [get-player-bonus]]))
 
 (defn- team-xg-conceded [team-xg-conceded opposing-team-xg average-xg]
   (* (/ opposing-team-xg average-xg) team-xg-conceded))
@@ -41,7 +42,9 @@
                 ]
             {:player-data         player-data
              :opposing-team       opposing-team
-             :average-xg-conceded average-xg-conceded}))
+             :average-xg-conceded average-xg-conceded
+             :is-home? (= home-team-id player-team-id)
+             :id (:player_opta_id player)}))
         matches))
 
 (defn- collect-team-data [team team-id matches home-away-data]
@@ -92,7 +95,7 @@
         :else (+ (:player_season_gsaa_90 player-dataA)
                  (:player_season_gsaa_90 player-dataB))))
 
-(defn- gw-player-xg [players fixtures blanks doubles home-away-data]
+(defn- gw-player-xg [fpl-player-data players fixtures blanks doubles home-away-data]
   (mapv (fn [player]
           (let [player-team-id (:team_id player)
                 match [(set/rename-keys
@@ -152,20 +155,32 @@
                                             player-datas))
                 ;log (when (= (:name player) "Mohamed Salah")
                 ;      (println player-xg-val))
+                bonus-pts (reduce (fn [total player-data]
+                                    (let [fpl-player (first (filter #(= (:code %) (:id player-data))
+                                                                    fpl-player-data))
+                                          bonus-pts (get-player-bonus (:id fpl-player) (:is-home? player-data))]
+                                      (if (nil? bonus-pts)
+                                        0
+                                        (+ (:bonus-average bonus-pts) total))))
+                                  0
+                                  player-datas)
                 has-blank-gw? (some #(= player-team-id %) blanks)]
             (cond
               (true? has-blank-gw?) (assoc (:player-data (first player-datas)) :player_season_xa_90 0
                                                                                :player_season_np_xg_90 0
                                                                                :player_season_gsaa_90 0
-                                                                               :blank_gw true)
+                                                                               :blank_gw true
+                                                                               :bonus-pts 0)
               (> (count player-datas) 1) (reduce (fn [player-dataA player-dataB]
                                                    (assoc player-dataA
                                                      :player_season_np_xg_90 player-xg-val
                                                      :player_season_xa_90 (calculate-xa player-dataA player-dataB)
                                                      :player_season_gsaa_90 (calculate-gsaa player-dataA player-dataB)
-                                                     :double_gw true))
+                                                     :double_gw true
+                                                     :bonus-pts bonus-pts))
                                                  (mapv #(:player-data %) player-datas))
-              :else (assoc (:player-data (first player-datas)) :player_season_np_xg_90 player-xg-val))))
+              :else (assoc (:player-data (first player-datas)) :player_season_np_xg_90 player-xg-val
+                                                               :bonus-pts bonus-pts))))
         players))
 
 (defn- gw-team-xg [teams fixtures blanks doubles home-away-data]
@@ -233,16 +248,16 @@
               (assoc (:team-data (first team-datas)) :team_season_np_xg_conceded_pg team-xg-vals))))
         teams))
 
-(defn expected-gw-points [filtered-gw-data latest-fixture fixtures-to-retrieve]
+(defn expected-gw-points [fpl-player-data fixtures filtered-gw-data latest-fixture fixtures-to-retrieve test?]
   (let [most-recent-data (last filtered-gw-data)
         player-data (:player-data most-recent-data)
         team-data (:team-data most-recent-data)
         home-away-data (gw-data/home-away-data latest-fixture)]
     (mapv (fn [{:keys [gw fixtures blanks doubles]}]
             {:gw          gw
-             :player-data (gw-player-xg player-data fixtures blanks doubles home-away-data)
+             :player-data (gw-player-xg fpl-player-data player-data fixtures blanks doubles home-away-data)
              :team-data   (gw-team-xg team-data fixtures blanks doubles home-away-data)})
-          (gw-data/fixture-data fixtures-to-retrieve))))
+          (gw-data/fixture-data fixtures fixtures-to-retrieve test?))))
 
 
 ;(clojure.pprint/pprint (first (filter #(= (:name %) "Danny Ings") (:player-data (first expected-gw-points)))))

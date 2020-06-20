@@ -22,16 +22,18 @@
                                            team-xg-concededs)))]
 
     {
-     :gk-scores  (fn [team-xg-conceded gsaa appearance-pts]
+     :gk-scores  (fn [team-xg-conceded gsaa appearance-pts bonus-pts]
                    (+ (gk-def-clean-sheet team-xg-conceded)
                       gsaa
-                      appearance-pts))
-     :def-scores (fn [player-xg player-xga team-xg-conceded appearance-pts]
+                      appearance-pts
+                      bonus-pts))
+     :def-scores (fn [player-xg player-xga team-xg-conceded appearance-pts bonus-pts]
                    (+ (gk-def-goal player-xg)
                       (gk-def-clean-sheet team-xg-conceded)
                       (assist player-xga)
-                      appearance-pts))
-     :mid-scores (fn [player-xg player-xga team-xg-concededs appearance-pts player-shots player-conversion]
+                      appearance-pts
+                      bonus-pts))
+     :mid-scores (fn [player-xg player-xga team-xg-concededs appearance-pts bonus-pts player-shots player-conversion]
                    (+ (mid-goal player-xg)
                       (reduce #(+ %1 %2)
                               (mapv (fn [team-xg-conceded]
@@ -42,14 +44,16 @@
                                         :else 0))
                                     team-xg-concededs))
                       (assist player-xga)
-                      appearance-pts))
+                      appearance-pts
+                      bonus-pts))
      ;(if (or (< player-shots min-shots) (<= player-conversion base-conversion))
      ;  0
      ;  (* (- player-conversion base-conversion) 5))))
-     :fwd-scores (fn [player-xg player-xga appearance-pts player-shots player-conversion]
+     :fwd-scores (fn [player-xg player-xga appearance-pts bonus-pts player-shots player-conversion]
                    (+ (fwd-goal player-xg)
                       (assist player-xga)
-                      appearance-pts))
+                      appearance-pts
+                      bonus-pts))
      ;(if (or (< player-shots min-shots) (<= player-conversion base-conversion))
      ;  0
      ;  (* (- player-conversion base-conversion) 4))))

@@ -3,7 +3,8 @@
             [fpl.gw-data :as gw-data]
             [fpl.gw-xg :as gw-xg]
             [clojure.pprint :refer [pprint]]
-            [fpl.appearance-pts :refer [player-appearance-pts]]))
+            [fpl.appearance-pts :refer [player-appearance-pts]]
+            [fpl.bonus-pts :refer [get-player-by-gw]]))
 
 (def total-matches-played 29)
 (def gw-trend-window 6)
@@ -48,34 +49,50 @@
                 player-shots      :player_season_np_shots_90
                 player-conversion :player_season_conversion_ratio
                 double-gw?        :double_gw
-                blank?            :blank_gw} matching-sb-player
+                blank?            :blank_gw
+                bonus-pts         :bonus-pts} matching-sb-player
                appearance-pts-total (last (:average-pts (first (filter #(= (:id %) (:id player)) player-appearance-pts)
-                                                             )))
+                                                               )))
+               ;bonus-pts-total (if (= (:minutes player) 0)
+               ;                  0
+               ;                  (* (/ (:bonus player) (:minutes player)) 90))
                appearance-pts (cond
                                 (true? ignore-appearances) 0
                                 (true? double-gw?) (* appearance-pts-total 2)
                                 (true? blank?) 0
-                                :else appearance-pts-total)]
+                                :else appearance-pts-total)
+               ;bonus-pts (cond
+               ;            (true? double-gw?) (* bonus-pts-total 2)
+               ;            (true? blank?) 0
+               ;            :else bonus-pts-total)
+               ]
            (if (not (nil? matching-sb-player))
-             (cond
-               (= (:element_type player) 1) (merge player {expected-pts-symbol ((:gk-scores rules) team-xg-conceded
-                                                                                                   gsaa
-                                                                                                   appearance-pts)})
-               (= (:element_type player) 2) (merge player {expected-pts-symbol ((:def-scores rules) player-xg
-                                                                                                    player-xga
-                                                                                                    team-xg-conceded
-                                                                                                    appearance-pts)})
-               (= (:element_type player) 3) (merge player {expected-pts-symbol ((:mid-scores rules) player-xg
-                                                                                                    player-xga
-                                                                                                    team-xg-conceded
-                                                                                                    appearance-pts
-                                                                                                    player-shots
-                                                                                                    player-conversion)})
-               (= (:element_type player) 4) (merge player {expected-pts-symbol ((:fwd-scores rules) player-xg
-                                                                                                    player-xga
-                                                                                                    appearance-pts
-                                                                                                    player-shots
-                                                                                                    player-conversion)}))
+             (let [expected-pts (cond
+                                  (= (:element_type player) 1) {expected-pts-symbol ((:gk-scores rules) team-xg-conceded
+                                                                                     gsaa
+                                                                                     appearance-pts
+                                                                                     bonus-pts)}
+                                  (= (:element_type player) 2) {expected-pts-symbol ((:def-scores rules) player-xg
+                                                                                     player-xga
+                                                                                     team-xg-conceded
+                                                                                     appearance-pts
+                                                                                     bonus-pts)}
+                                  (= (:element_type player) 3) {expected-pts-symbol ((:mid-scores rules) player-xg
+                                                                                     player-xga
+                                                                                     team-xg-conceded
+                                                                                     appearance-pts
+                                                                                     bonus-pts
+                                                                                     player-shots
+                                                                                     player-conversion)}
+                                  (= (:element_type player) 4) {expected-pts-symbol ((:fwd-scores rules) player-xg
+                                                                                     player-xga
+                                                                                     appearance-pts
+                                                                                     bonus-pts
+                                                                                     player-shots
+                                                                                     player-conversion)})]
+               (-> player
+                   (merge expected-pts)
+                   (assoc :bonus-pts bonus-pts)))
              ;(clojure.pprint/pprint player)
              )))
        players))
@@ -98,7 +115,7 @@
    {:name "Tanganga" :player_opta_id 199584 :keep 0 :discard 0}
 
    {:name "Schmeichel" :player_opta_id 17745 :keep 0 :discard 0}
-   {:name "McCarthy" :player_opta_id 58376 :keep 0}])
+   {:name "McCarthy" :player_opta_id 58376 :keep 1}])
 
 (def wanted-players
   [
@@ -106,11 +123,11 @@
    ;{:name "Salah" :player_opta_id 118748 :keep 1}
    ;{:name "Robertson" :player_opta_id 122798 :keep 1}
    ;{:name "Firmino" :player_opta_id 92217 :keep 1}
-   ;{:name "Mousset" :player_opta_id 178304 :keep 1}
+   ;{:name "Sterling" :player_opta_id 103955 :keep 1}
 
-   ;{:name "McCarthy" :player_opta_id 58376 :keep 1}
-   ;{:name "Hanley" :player_opta_id 83428 :keep 1}
-   ;{:name "Douglas Luiz" :player_opta_id 230046 :keep 1}
+   ;{:name "Aubameyang" :player_opta_id 54694 :keep 1}
+   ;{:name "Grealish" :player_opta_id 114283 :keep 1}
+   ;{:name "Baldock" :player_opta_id 82691 :keep 1}
    ])
 
 (defn- find-in-curr-team [player]
@@ -145,11 +162,19 @@
                                                                         ))))
         (fpl-players fpl-data)))
 
+(defn- merge-bonus-points [fpl-players sb-player-data gw]
+  (let [player (first (filter (fn [fpl-player]
+                                (= (:player_id fpl-player) (:player_id sb-player-data)))
+                              fpl-players))]
+  (merge sb-player-data {:bonus-pts (:bonus-average (get-player-by-gw (:id player) gw))})))
+
 (defn- add-player-expected-points-per-gw [filtered-gw-data fpl-players-with-sb-id ignore-appearances]
+  (println "add-player-expected-points-per-gw")
   (mapv (fn [data]
           (filter #(not (nil? %))
                   (merge-expected-values fpl-players-with-sb-id
-                                         (:player-data data)
+                                         (map #(merge-bonus-points fpl-players-with-sb-id % (:gw data))
+                                              (:player-data data))
                                          (mapv (fn [team]
                                                  (assoc team
                                                    :team_season_np_xg_conceded_pg
@@ -176,7 +201,8 @@
           (assoc player :trend (calculate-trend player prev-gameweeks)))
         player-expected-points-joined))
 
-(defn- add-player-expected-points-future-gws [player-expected-points-joined filtered-gw-data latest-fixture fixtures ignore-appearances]
+(defn- add-player-expected-points-future-gws [player-expected-points-joined filtered-gw-data fixture-data
+                                              latest-fixture fixtures ignore-appearances test?]
   (println "add-player-expected-points-future-gws")
   (mapv (fn [data]
           (filter #(not (nil? %))
@@ -185,15 +211,16 @@
                                          (:team-data data)
                                          ignore-appearances
                                          :expected-pts-symbol (keyword (build-expected-pts-str data)))))
-        (gw-xg/expected-gw-points filtered-gw-data latest-fixture fixtures)))
+        (gw-xg/expected-gw-points player-expected-points-joined fixture-data filtered-gw-data latest-fixture fixtures
+                                  test?                         )))
 
 (defn- join-player-expected-points-future-gws [player-expected-points-future-gws]
   (println "join-player-expected-points-future-gws")
   (reduce (fn [gw-list1 gw-list2]
             (mapv
               (fn [player]
-                (merge player (first (filter #(= (:code %) (:code player)) gw-list2))))
-              gw-list1))
+                (merge player (first (filter #(= (:code %) (:code player)) gw-list1))))
+              gw-list2))
           player-expected-points-future-gws))
 
 (defn- add-player-expected-points-future-gws-total [player-expected-points-future-gws-joined fixtures]
@@ -210,7 +237,8 @@
             (assoc player :expected-points-total expected-points-total)))
         player-expected-points-future-gws-joined))
 
-(defn calculate-expected-values [fpl-data to-gw latest-fixture fixtures ignore-appearances]
+(defn calculate-expected-values [fpl-data fixture-data to-gw latest-fixture fixtures
+                                 & {:keys [ignore-appearances test?]}]
   (let [prev-gameweeks (map #(keyword (build-gw-str %))
                             (range 9 (+ latest-fixture 1)))
         filtered-gw-data (filter #(<= (:gw %) to-gw) gw-data/gameweek-data)
@@ -218,8 +246,9 @@
         player-expected-points-per-gw (add-player-expected-points-per-gw filtered-gw-data fpl-players-with-sb-id ignore-appearances)
         player-expected-points-joined (join-expected-points player-expected-points-per-gw)
         players-with-trend (add-players-trend player-expected-points-joined prev-gameweeks)
-        player-expected-points-future-gws (add-player-expected-points-future-gws players-with-trend filtered-gw-data latest-fixture
-                                                                                 fixtures ignore-appearances)
+        player-expected-points-future-gws (add-player-expected-points-future-gws players-with-trend filtered-gw-data
+                                                                                 fixture-data latest-fixture
+                                                                                 fixtures ignore-appearances test?)
         player-expected-points-future-gws-joined (join-player-expected-points-future-gws player-expected-points-future-gws)
         player-expected-points-future-gws-total (add-player-expected-points-future-gws-total
                                                   player-expected-points-future-gws-joined fixtures)
@@ -251,7 +280,9 @@
                                                              :keep
                                                              :discard
                                                              :trend
-                                                             :expected-points-total]
+                                                             :expected-points-total
+                                                             :bonus
+                                                             :bonus-pts]
                                                             prev-gameweeks
                                                             expected-points-keys))]
                              (assoc plyr :expected_points_per_90
