@@ -3,7 +3,7 @@
             [clojure.data.csv :as csv]))
 
 (defn- read-csv []
-  (with-open [reader (io/reader "../resources/fpl_data/all-gws-to-29.csv")]
+  (with-open [reader (io/reader "../resources/fpl_data/all-gws-to-41.csv")]
     (doall
       (csv/read-csv reader))))
 

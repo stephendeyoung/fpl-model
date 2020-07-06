@@ -51,8 +51,11 @@
                 double-gw?        :double_gw
                 blank?            :blank_gw
                 bonus-pts         :bonus-pts} matching-sb-player
-               appearance-pts-total (last (:average-pts (first (filter #(= (:id %) (:id player)) player-appearance-pts)
-                                                               )))
+               all-player-appearance-pts (first (filter #(= (:id %) (:id player)) player-appearance-pts)
+                                                )
+               appearance-pts-total (if all-player-appearance-pts
+                                      (last (:average-pts all-player-appearance-pts))
+                                      0)
                ;bonus-pts-total (if (= (:minutes player) 0)
                ;                  0
                ;                  (* (/ (:bonus player) (:minutes player)) 90))
@@ -98,36 +101,36 @@
        players))
 
 (def current-team
-  [{:name "Ings" :player_opta_id 84939 :keep 0 :discard 0}
-   {:name "Calvert-Lewin" :player_opta_id 177815 :keep 0 :discard 0}
-   {:name "Jota" :player_opta_id 194634 :keep 0}
+  [{:name "Calvert-Lewin" :player_opta_id 177815 :keep 0 :discard 0}
+   {:name "Jimenez" :player_opta_id 102057 :keep 0 :discard 0}
+   {:name "Ings" :player_opta_id 84939 :keep 0}
 
-   {:name "Barnes" :player_opta_id 201666 :keep 0}
-   {:name "Salah" :player_opta_id 118748 :keep 0 :discard 0}
-   {:name "De Bruyne" :player_opta_id 61366 :keep 1}
-   {:name "Cantwell" :player_opta_id 193111 :keep 0 :discard 0}
+   {:name "Sarr" :player_opta_id 232185 :keep 0}
+   {:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
+   {:name "De Bruyne" :player_opta_id 61366 :keep 0}
+   {:name "McCarthy" :player_opta_id 50472 :keep 0 :discard 0}
    {:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
 
    {:name "Doherty" :player_opta_id 87835 :keep 0}
-   {:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
+   {:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
    {:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
-   {:name "Otamendi" :player_opta_id 57410 :keep 0 :discard 0}
-   {:name "Tanganga" :player_opta_id 199584 :keep 0 :discard 0}
+   {:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
+   {:name "Holgate" :player_opta_id 194164 :keep 0 :discard 0}
 
    {:name "Schmeichel" :player_opta_id 17745 :keep 0 :discard 0}
-   {:name "McCarthy" :player_opta_id 58376 :keep 1}])
+   {:name "McCarthy" :player_opta_id 58376 :keep 0}])
 
 (def wanted-players
   [
    ;{:name "Aguero" :player_opta_id 37572 :keep 1}
-   ;{:name "Salah" :player_opta_id 118748 :keep 1}
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
    ;{:name "Robertson" :player_opta_id 122798 :keep 1}
    ;{:name "Firmino" :player_opta_id 92217 :keep 1}
-   ;{:name "Sterling" :player_opta_id 103955 :keep 1}
+   ;{:name "Janmaat" :player_opta_id 52940 :keep 1}
 
-   ;{:name "Aubameyang" :player_opta_id 54694 :keep 1}
-   ;{:name "Grealish" :player_opta_id 114283 :keep 1}
-   ;{:name "Baldock" :player_opta_id 82691 :keep 1}
+   ;{:name "Guendouzi" :player_opta_id 242166 :keep 1}
+   ;{:name "El Mohamady" :player_opta_id 37339 :keep 1}
+   ;{:name "McCarthy" :player_opta_id 58376 :keep 1}
    ])
 
 (defn- find-in-curr-team [player]
@@ -165,8 +168,15 @@
 (defn- merge-bonus-points [fpl-players sb-player-data gw]
   (let [player (first (filter (fn [fpl-player]
                                 (= (:player_id fpl-player) (:player_id sb-player-data)))
-                              fpl-players))]
-  (merge sb-player-data {:bonus-pts (:bonus-average (get-player-by-gw (:id player) gw))})))
+                              fpl-players))
+        bonus-pts (get-player-by-gw (:id player) (cond
+                                                   (= gw 30) 39
+                                                   (= gw 31) 40
+                                                   (= gw 32) 41
+                                                   :else gw))]
+    (merge sb-player-data {:bonus-pts (if bonus-pts
+                                        (:bonus-average bonus-pts)
+                                        0)})))
 
 (defn- add-player-expected-points-per-gw [filtered-gw-data fpl-players-with-sb-id ignore-appearances]
   (println "add-player-expected-points-per-gw")
@@ -212,7 +222,7 @@
                                          ignore-appearances
                                          :expected-pts-symbol (keyword (build-expected-pts-str data)))))
         (gw-xg/expected-gw-points player-expected-points-joined fixture-data filtered-gw-data latest-fixture fixtures
-                                  test?                         )))
+                                  test?)))
 
 (defn- join-player-expected-points-future-gws [player-expected-points-future-gws]
   (println "join-player-expected-points-future-gws")
