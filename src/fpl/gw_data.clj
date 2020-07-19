@@ -77,6 +77,18 @@
    {:gw          32
     :player-data (read-statsbomb-data "statsbomb-player-data-gw32.edn")
     :team-data   (read-statsbomb-data "statsbomb-team-data-gw32.edn")}
+   {:gw          33
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw33.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw33.edn")}
+   {:gw          34
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw34.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw34.edn")}
+   {:gw          35
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw35.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw35.edn")}
+   {:gw          36
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw36.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw36.edn")}
    ])
 
 (defn home-away-data [gw]

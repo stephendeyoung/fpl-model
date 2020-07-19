@@ -101,30 +101,35 @@
        players))
 
 (def current-team
-  [{:name "Calvert-Lewin" :player_opta_id 177815 :keep 0 :discard 0}
-   {:name "Jimenez" :player_opta_id 102057 :keep 0 :discard 0}
+  [{:name "Connolly" :player_opta_id 233425 :keep 1 :discard 0}
+   {:name "Jota" :player_opta_id 194634 :keep 0 :discard 0}
    {:name "Ings" :player_opta_id 84939 :keep 0}
 
-   {:name "Sarr" :player_opta_id 232185 :keep 0}
+   {:name "Pulisic" :player_opta_id 176413 :keep 0}
    {:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
-   {:name "De Bruyne" :player_opta_id 61366 :keep 0}
-   {:name "McCarthy" :player_opta_id 50472 :keep 0 :discard 0}
-   {:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   {:name "De Bruyne" :player_opta_id 61366 :keep 1}
+   {:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   {:name "Mahrez" :player_opta_id 103025 :keep 1 :discard 0}
 
    {:name "Doherty" :player_opta_id 87835 :keep 0}
    {:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
    {:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
    {:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
-   {:name "Holgate" :player_opta_id 194164 :keep 0 :discard 0}
+   {:name "Holgate" :player_opta_id 194164 :keep 1 :discard 0}
 
    {:name "Schmeichel" :player_opta_id 17745 :keep 0 :discard 0}
-   {:name "McCarthy" :player_opta_id 58376 :keep 0}])
+   {:name "McCarthy" :player_opta_id 58376 :keep 1}
+
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0}
+   ;{:name "Connolly" :player_opta_id 233425 :keep 1}
+   ;{:name "Foden" :player_opta_id 209244 :keep 0}
+   ])
 
 (def wanted-players
   [
-   ;{:name "Aguero" :player_opta_id 37572 :keep 1}
-   ;{:name "Salah" :player_opta_id 118748 :keep 0}
-   ;{:name "Robertson" :player_opta_id 122798 :keep 1}
+   ;{:name "Jesus" :player_opta_id 205651 :keep 1}
+   ;{:name "Antonio" :player_opta_id 57531 :keep 1}
+   ;{:name "Sterling" :player_opta_id 103955 :keep 1}
    ;{:name "Firmino" :player_opta_id 92217 :keep 1}
    ;{:name "Janmaat" :player_opta_id 52940 :keep 1}
 
@@ -173,6 +178,10 @@
                                                    (= gw 30) 39
                                                    (= gw 31) 40
                                                    (= gw 32) 41
+                                                   (= gw 33) 42
+                                                   (= gw 34) 43
+                                                   (= gw 35) 44
+                                                   (= gw 36) 44
                                                    :else gw))]
     (merge sb-player-data {:bonus-pts (if bonus-pts
                                         (:bonus-average bonus-pts)
