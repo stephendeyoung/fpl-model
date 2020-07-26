@@ -102,14 +102,14 @@
 
 (def current-team
   [{:name "Connolly" :player_opta_id 233425 :keep 1 :discard 0}
-   {:name "Jota" :player_opta_id 194634 :keep 0 :discard 0}
+   {:name "Jota" :player_opta_id 194634 :keep 0 :discard 1}
    {:name "Ings" :player_opta_id 84939 :keep 0}
 
    {:name "Pulisic" :player_opta_id 176413 :keep 0}
    {:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
-   {:name "De Bruyne" :player_opta_id 61366 :keep 1}
+   {:name "De Bruyne" :player_opta_id 61366 :keep 0}
    {:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
-   {:name "Mahrez" :player_opta_id 103025 :keep 1 :discard 0}
+   {:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
 
    {:name "Doherty" :player_opta_id 87835 :keep 0}
    {:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
@@ -181,7 +181,8 @@
                                                    (= gw 33) 42
                                                    (= gw 34) 43
                                                    (= gw 35) 44
-                                                   (= gw 36) 44
+                                                   (= gw 36) 45
+                                                   (= gw 37) 46
                                                    :else gw))]
     (merge sb-player-data {:bonus-pts (if bonus-pts
                                         (:bonus-average bonus-pts)

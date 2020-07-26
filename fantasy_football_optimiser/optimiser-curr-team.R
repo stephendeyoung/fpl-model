@@ -13,21 +13,22 @@ df <- data %>%
   data.frame %>% 
   filter(
          web_name != 'Otamendi' &
-         web_name != 'Mousset' &   
-         #web_name != 'Zinchenko' &
+         web_name != 'Snodgrass' &   
+         web_name != 'Abraham' &
          web_name != 'Agüero' & 
          #web_name != 'Jesus' &    
-         web_name != 'Abraham' &
+         web_name != 'Calvert-Lewin' &
          #web_name != 'Walker' &
          #web_name != 'Ederson' &   
          web_name != 'Lundstram' &
          #web_name != 'Pérez' &   
          #web_name != 'David Silva' &
-         web_name != 'Alonso' &
+         web_name != 'Tomori' &
          minutes >= 1138 |
-         web_name == 'Foden' |
-         web_name == 'Greenwood' |
-         web_name == 'Fernandes'   
+         #web_name == 'Foden' |
+         #web_name == 'Greenwood' |
+         #web_name == 'Fernandes' |
+         web_name == 'El Mohamady'
          ) %>%
   mutate(now_cost = now_cost / 10) %>% 
   select(sort(names(.)))
@@ -36,16 +37,16 @@ df$points_per_90 <- (df$total_points / df$minutes) * 90
 df$bonus_per_90 <- ((df$bonus / df$minutes) * 90)
 
 # The vector to optimize on
-objective <- df$expected.points.total
+objective <- df$expected_points_per_90
 
 # Fitting Constraints
 num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-max_cost <- 99.7
-min_current_team <- 15
-keep_in_team <- 5
+max_cost <- 99.6
+min_current_team <- 13
+keep_in_team <- 3
 discard_from_team <- 0
 
 # Create vectors to constrain by position
@@ -85,13 +86,13 @@ solution <- df %>%
          element_type, 
          now_cost, 
          total_points,
-         gw37.expected.points, 
+         gw38.expected.points, 
          #expected_points, 
          minutes, 
          current_team, 
          trend
          ) %>% 
-  arrange(desc(gw37.expected.points))
+  arrange(desc(gw38.expected.points))
 
 print(solution$web_name)
 
@@ -103,51 +104,51 @@ solution %>% summarise(total_points_scored = sum(total_points)) %>% print
 solution %>% summarise(total_expected_points_per_90 = sum(expected_points_per_90)) %>% print
 #solution %>% summarise(total_expected_points = sum(expected_points)) %>% print
 
-def5 <- solution %>% filter(element_type == "2") %$% sum(gw37.expected.points) %>% first
-mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def5 <- solution %>% filter(element_type == "2") %$% sum(gw38.expected.points) %>% first
+mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("5-3-2:")
 print(def5 + mid3 + fwd2)
 
-def4 <- solution %>% filter(element_type == "2") %>% top_n(4, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def4 <- solution %>% filter(element_type == "2") %>% top_n(4, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("4-4-2:")
 print(def4 + mid4 + fwd2)
 
-def4 <- solution %>% filter(element_type == "2") %>% top_n(4, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def4 <- solution %>% filter(element_type == "2") %>% top_n(4, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid3 <- solution %>% filter(element_type == "3") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("4-3-3:")
 print(def4 + mid3 + fwd3)
 
-def3 <- solution %>% filter(element_type == "2") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid5 <- solution %>% filter(element_type == "3") %>% top_n(5, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def3 <- solution %>% filter(element_type == "2") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid5 <- solution %>% filter(element_type == "3") %>% top_n(5, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd2 <- solution %>% filter(element_type == "4") %>% top_n(2, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("3-5-2:")
 print(def3 + mid5 + fwd2)
 
-def3 <- solution %>% filter(element_type == "2") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def3 <- solution %>% filter(element_type == "2") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("3-4-3:")
 print(def3 + mid4 + fwd3)
 
-def5 <- solution %>% filter(element_type == "2") %>% top_n(5, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd1 <- solution %>% filter(element_type == "4") %>% top_n(1, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def5 <- solution %>% filter(element_type == "2") %>% top_n(5, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid4 <- solution %>% filter(element_type == "3") %>% top_n(4, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd1 <- solution %>% filter(element_type == "4") %>% top_n(1, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("5-4-1:")
 print(def5 + mid4 + fwd1)
 
-def5 <- solution %>% filter(element_type == "2") %>% top_n(5, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-mid2 <- solution %>% filter(element_type == "3") %>% top_n(2, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
-fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw37.expected.points) %$% sum(gw37.expected.points) %>% first
+def5 <- solution %>% filter(element_type == "2") %>% top_n(5, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+mid2 <- solution %>% filter(element_type == "3") %>% top_n(2, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
+fwd3 <- solution %>% filter(element_type == "4") %>% top_n(3, gw38.expected.points) %$% sum(gw38.expected.points) %>% first
 
 print("5-2-3:")
 print(def5 + mid2 + fwd3)

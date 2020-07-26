@@ -89,6 +89,9 @@
    {:gw          36
     :player-data (read-statsbomb-data "statsbomb-player-data-gw36.edn")
     :team-data   (read-statsbomb-data "statsbomb-team-data-gw36.edn")}
+   {:gw          37
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw37.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw37.edn")}
    ])
 
 (defn home-away-data [gw]
