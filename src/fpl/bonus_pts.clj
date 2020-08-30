@@ -10,6 +10,7 @@
               (let [total-mins (reduce #(+ (:minutes %2) %1) 0 player-data)
                     total-bonus (reduce #(+ (:bonus %2) %1) 0 player-data)]
                 {:id            player-id
+                 :name          (:name (first player-data))
                  :home?         home?
                  :bonus-average (if (= total-mins 0)
                                   0

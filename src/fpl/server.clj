@@ -15,7 +15,7 @@
   (:body (get-fpl-data)))
 
 (def results
-  (calculate-expected-values fpl-data fixtures 38 37 [38] :ignore-appearances true :test? false))
+  (calculate-expected-values fpl-data fixtures 38 38 [1 2 3 4 5 6 7 8] :ignore-appearances true :test? false))
 
 (defn handler [request]
   {:status  200

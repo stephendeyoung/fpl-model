@@ -74,55 +74,52 @@
                                   (= (:element_type player) 1) {expected-pts-symbol ((:gk-scores rules) team-xg-conceded
                                                                                      gsaa
                                                                                      appearance-pts
-                                                                                     bonus-pts)}
+                                                                                     0)}
                                   (= (:element_type player) 2) {expected-pts-symbol ((:def-scores rules) player-xg
                                                                                      player-xga
                                                                                      team-xg-conceded
                                                                                      appearance-pts
-                                                                                     bonus-pts)}
+                                                                                     0)}
                                   (= (:element_type player) 3) {expected-pts-symbol ((:mid-scores rules) player-xg
                                                                                      player-xga
                                                                                      team-xg-conceded
                                                                                      appearance-pts
-                                                                                     bonus-pts
+                                                                                     0
                                                                                      player-shots
                                                                                      player-conversion)}
                                   (= (:element_type player) 4) {expected-pts-symbol ((:fwd-scores rules) player-xg
                                                                                      player-xga
                                                                                      appearance-pts
-                                                                                     bonus-pts
+                                                                                     0
                                                                                      player-shots
                                                                                      player-conversion)})]
                (-> player
                    (merge expected-pts)
-                   (assoc :bonus-pts bonus-pts)))
+                   (assoc :bonus-pts 0)))
              ;(clojure.pprint/pprint player)
              )))
        players))
 
 (def current-team
-  [{:name "Connolly" :player_opta_id 233425 :keep 1 :discard 0}
-   {:name "Jota" :player_opta_id 194634 :keep 0 :discard 1}
-   {:name "Ings" :player_opta_id 84939 :keep 0}
+  [
+   ;{:name "Werner" :player_opta_id 165153 :keep 1 :discard 0}
+   ;{:name "Jota" :player_opta_id 194634 :keep 0 :discard 1}
+   ;{:name "Ings" :player_opta_id 84939 :keep 0}
+   ;
+   ;{:name "Pulisic" :player_opta_id 176413 :keep 0}
+   ;{:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
+   {:name "Stephens" :player_opta_id 40845 :keep 1}
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   ;{:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   ;
+   ;{:name "Doherty" :player_opta_id 87835 :keep 0}
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   ;{:name "Bernardo" :player_opta_id 209362 :keep 1 :discard 0}
+   ;{:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
+   {:name "Williams" :player_opta_id 215136 :keep 1 :discard 0}
 
-   {:name "Pulisic" :player_opta_id 176413 :keep 0}
-   {:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
-   {:name "De Bruyne" :player_opta_id 61366 :keep 0}
-   {:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
-   {:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
-
-   {:name "Doherty" :player_opta_id 87835 :keep 0}
-   {:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
-   {:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
-   {:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
-   {:name "Holgate" :player_opta_id 194164 :keep 1 :discard 0}
-
-   {:name "Schmeichel" :player_opta_id 17745 :keep 0 :discard 0}
+   {:name "Nyland" :player_opta_id 98770 :keep 1 :discard 0}
    {:name "McCarthy" :player_opta_id 58376 :keep 1}
-
-   ;{:name "Antonio" :player_opta_id 57531 :keep 0}
-   ;{:name "Connolly" :player_opta_id 233425 :keep 1}
-   ;{:name "Foden" :player_opta_id 209244 :keep 0}
    ])
 
 (def wanted-players
@@ -183,6 +180,7 @@
                                                    (= gw 35) 44
                                                    (= gw 36) 45
                                                    (= gw 37) 46
+                                                   (= gw 38) 47
                                                    :else gw))]
     (merge sb-player-data {:bonus-pts (if bonus-pts
                                         (:bonus-average bonus-pts)
@@ -282,12 +280,13 @@
                                         player-expected-points-future-gws-total)
         check-number-players-each-position (check-number-players-each-position fpl-players-with-curr-team)
         expected-points-keys (map (fn [fixture]
-                                    (keyword (str "gw" fixture "-expected-points")))
+                                    (keyword (str (build-gw-str fixture) "-expected-points")))
                                   fixtures)]
     (if (nil? check-number-players-each-position)
       (let [players (map (fn [player]
                            (let [plyr (select-keys player (concat
                                                             [:web_name
+                                                             :first_name
                                                              :now_cost
                                                              :current_team
                                                              :code
@@ -303,7 +302,7 @@
                                                              :expected-points-total
                                                              :bonus
                                                              :bonus-pts]
-                                                            prev-gameweeks
+                                                            ;prev-gameweeks
                                                             expected-points-keys))]
                              (assoc plyr :expected_points_per_90
                                          ((keyword (str "gw" latest-fixture)) plyr))))

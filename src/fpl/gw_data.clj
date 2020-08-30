@@ -92,6 +92,9 @@
    {:gw          37
     :player-data (read-statsbomb-data "statsbomb-player-data-gw37.edn")
     :team-data   (read-statsbomb-data "statsbomb-team-data-gw37.edn")}
+   {:gw          38
+    :player-data (read-statsbomb-data "statsbomb-player-data-gw38.edn")
+    :team-data   (read-statsbomb-data "statsbomb-team-data-gw38.edn")}
    ])
 
 (defn home-away-data [gw]
@@ -114,127 +117,183 @@
            ;                     (and (.after (:date fixture) #inst "2020-02-22")
            ;                          (.before (:date fixture) #inst "2020-02-25")))
            ;                   fixtures)}
-           {:gw 28
+           ;{:gw 28
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-02-28")
+           ;                          (.before (:date fixture) #inst "2020-03-02")))
+           ;                   fixtures)
+           ; :test? true
+           ; :blanks [102 247 152 178]}
+           ;{:gw 29
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-03-07")
+           ;                          (.before (:date fixture) #inst "2020-03-12")))
+           ;                   fixtures)
+           ; :test? true
+           ; :doubles [{:home-team-id 247
+           ;            :away-team-id 178}]}
+           ;{:gw       30
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-03-14")
+           ;                          (.before (:date fixture) #inst "2020-03-17")))
+           ;                   fixtures)
+           ; :test? true
+           ; :doubles [{:home-team-id 247
+           ;            :away-team-id 178}
+           ;           {:home-team-id 152
+           ;            :away-team-id 102}]}
+           ;{:gw       31
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-03-20")
+           ;                          (.before (:date fixture) #inst "2020-03-23")))
+           ;                   fixtures)
+           ; ;:blanks   [247 178 666 168 152 122 88 754 102 110 199 118]
+           ; }
+           ;{:gw       32
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-04-04")
+           ;                          (.before (:date fixture) #inst "2020-04-05")))
+           ;                   fixtures)}
+           ;{:gw       33
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-04-11")
+           ;                          (.before (:date fixture) #inst "2020-04-12")))
+           ;                   fixtures)}
+           ;{:gw       34
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-04-18")
+           ;                          (.before (:date fixture) #inst "2020-04-19")))
+           ;                   fixtures)}
+           ;{:gw       35
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-04-25")
+           ;                          (.before (:date fixture) #inst "2020-04-26")))
+           ;                   fixtures)}
+           ;{:gw       36
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-05-02")
+           ;                          (.before (:date fixture) #inst "2020-05-03")))
+           ;                   fixtures)}
+           ;{:gw       37
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-05-09")
+           ;                          (.before (:date fixture) #inst "2020-05-10")))
+           ;                   fixtures)}
+           ;{:gw       38
+           ; :test? true
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-05-17")
+           ;                          (.before (:date fixture) #inst "2020-05-18")))
+           ;                   fixtures)}
+           ;{:gw       31
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-06-23")
+           ;                          (.before (:date fixture) #inst "2020-06-26")))
+           ;                   fixtures)}
+           ;{:gw       32
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-06-27")
+           ;                          (.before (:date fixture) #inst "2020-07-03")))
+           ;                   fixtures)}
+           ;{:gw       33
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-04")
+           ;                          (.before (:date fixture) #inst "2020-07-07")))
+           ;                   fixtures)}
+           ;{:gw       34
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-07")
+           ;                          (.before (:date fixture) #inst "2020-07-10")))
+           ;                   fixtures)}
+           ;{:gw       35
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-11")
+           ;                          (.before (:date fixture) #inst "2020-07-14")))
+           ;                   fixtures)}
+           ;{:gw       36
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-15")
+           ;                          (.before (:date fixture) #inst "2020-07-16")))
+           ;                   fixtures)}
+           ;{:gw       37
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-18")
+           ;                          (.before (:date fixture) #inst "2020-07-19")))
+           ;                   fixtures)}
+           ;{:gw       38
+           ; :test? false
+           ; :fixtures (filter (fn [fixture]
+           ;                     (and (.after (:date fixture) #inst "2020-07-26")
+           ;                          (.before (:date fixture) #inst "2020-07-27")))
+           ;                   fixtures)}
+           {:gw       1
+            :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-02-28")
-                                     (.before (:date fixture) #inst "2020-03-02")))
+                                (and (.after (:date fixture) #inst "2020-09-12")
+                                     (.before (:date fixture) #inst "2020-09-15")))
                               fixtures)
-            :test? true
-            :blanks [102 247 152 178]}
-           {:gw 29
+            :blanks   [754 247 97 152 425 122 90]}
+           {:gw       2
+            :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-03-07")
-                                     (.before (:date fixture) #inst "2020-03-12")))
+                                (and (.after (:date fixture) #inst "2020-09-19")
+                                     (.before (:date fixture) #inst "2020-09-22")))
                               fixtures)
-            :test? true
-            :doubles [{:home-team-id 247
-                       :away-team-id 178}]}
-           {:gw       30
+            :blanks   [425 122 90]}
+           {:gw       3
+            :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-03-14")
-                                     (.before (:date fixture) #inst "2020-03-17")))
+                                (and (.after (:date fixture) #inst "2020-09-26")
+                                     (.before (:date fixture) #inst "2020-09-29")))
                               fixtures)
-            :test? true
-            :doubles [{:home-team-id 247
-                       :away-team-id 178}
-                      {:home-team-id 152
-                       :away-team-id 102}]}
-           {:gw       31
-            :test? true
+            :blanks   [425 122 90]}
+           {:gw       4
+            :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-03-20")
-                                     (.before (:date fixture) #inst "2020-03-23")))
+                                (and (.after (:date fixture) #inst "2020-10-03")
+                                     (.before (:date fixture) #inst "2020-10-04")))
                               fixtures)
-            ;:blanks   [247 178 666 168 152 122 88 754 102 110 199 118]
-            }
-           {:gw       32
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-04-04")
-                                     (.before (:date fixture) #inst "2020-04-05")))
-                              fixtures)}
-           {:gw       33
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-04-11")
-                                     (.before (:date fixture) #inst "2020-04-12")))
-                              fixtures)}
-           {:gw       34
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-04-18")
-                                     (.before (:date fixture) #inst "2020-04-19")))
-                              fixtures)}
-           {:gw       35
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-04-25")
-                                     (.before (:date fixture) #inst "2020-04-26")))
-                              fixtures)}
-           {:gw       36
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-05-02")
-                                     (.before (:date fixture) #inst "2020-05-03")))
-                              fixtures)}
-           {:gw       37
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-05-09")
-                                     (.before (:date fixture) #inst "2020-05-10")))
-                              fixtures)}
-           {:gw       38
-            :test? true
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-05-17")
-                                     (.before (:date fixture) #inst "2020-05-18")))
-                              fixtures)}
-           {:gw       31
+            :blanks   [425 122 90]}
+           {:gw       5
             :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-06-23")
-                                     (.before (:date fixture) #inst "2020-06-26")))
-                              fixtures)}
-           {:gw       32
+                                (and (.after (:date fixture) #inst "2020-10-17")
+                                     (.before (:date fixture) #inst "2020-10-18")))
+                              fixtures)
+            :blanks   [425 122 90]}
+           {:gw       6
             :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-06-27")
-                                     (.before (:date fixture) #inst "2020-07-03")))
-                              fixtures)}
-           {:gw       33
+                                (and (.after (:date fixture) #inst "2020-10-24")
+                                     (.before (:date fixture) #inst "2020-10-25")))
+                              fixtures)
+            :blanks   [425 122 90]}
+           {:gw       7
             :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-04")
-                                     (.before (:date fixture) #inst "2020-07-07")))
-                              fixtures)}
-           {:gw       34
+                                (and (.after (:date fixture) #inst "2020-10-31")
+                                     (.before (:date fixture) #inst "2020-11-01")))
+                              fixtures)
+            :blanks   [425 122 90]}
+           {:gw       8
             :test? false
             :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-07")
-                                     (.before (:date fixture) #inst "2020-07-10")))
-                              fixtures)}
-           {:gw       35
-            :test? false
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-11")
-                                     (.before (:date fixture) #inst "2020-07-14")))
-                              fixtures)}
-           {:gw       36
-            :test? false
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-15")
-                                     (.before (:date fixture) #inst "2020-07-16")))
-                              fixtures)}
-           {:gw       37
-            :test? false
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-18")
-                                     (.before (:date fixture) #inst "2020-07-19")))
-                              fixtures)}
-           {:gw       38
-            :test? false
-            :fixtures (filter (fn [fixture]
-                                (and (.after (:date fixture) #inst "2020-07-26")
-                                     (.before (:date fixture) #inst "2020-07-27")))
-                              fixtures)}
+                                (and (.after (:date fixture) #inst "2020-11-07")
+                                     (.before (:date fixture) #inst "2020-11-08")))
+                              fixtures)
+            :blanks   [425 122 90]}
            ]))

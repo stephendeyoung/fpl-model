@@ -11,7 +11,9 @@
   (let [xg-val (* (/ opposing-team-xg-conceded average-xg-conceded) player-xg)]
     (if (< xg-val 0)
       0
-      xg-val)))
+      xg-val
+      ;(* xg-val 2) ;- boost to xG
+      )))
 
 (defn- collect-player-data [player player-team-id matches home-away-data]
   (mapv (fn [{:keys [home-team-id away-team-id]}]
@@ -40,6 +42,13 @@
                 ;log (if (= (:name player) "Mohamed Salah")
                 ;      (println average-xg-conceded))
                 ]
+            ;(pprint matches)
+            ;(println (:name player))
+            ;(println opposing-team)
+            ;(println player-team-id)
+            ;(println home-team-id)
+            ;(println away-team-id)
+            ;(println "")
             {:player-data         player-data
              :opposing-team       opposing-team
              :average-xg-conceded average-xg-conceded
@@ -72,6 +81,7 @@
                 ;      (println average-xg)
                 ;      (println "\n"))
                 ]
+
             {:team-data     team-data
              :opposing-team opposing-team
              :average-xg    average-xg}))
@@ -147,11 +157,15 @@
                                               ;  (println average-xg-conceded)
                                               ;  (println (:player_season_np_xg_90 player-data))
                                               ;  (println (:team_season_np_xg_conceded_pg opposing-team)))
-                                              (if (nil? player-data)
+                                              (if (or (nil? player-data)
+                                                      (nil? opposing-team))
                                                 0
+                                                ;(try
                                                 (player-xg (:player_season_np_xg_90 player-data)
                                                            (:team_season_np_xg_conceded_pg opposing-team)
-                                                           average-xg-conceded)))
+                                                           average-xg-conceded))
+                                                     #_(catch Exception _ (do (println (:name player-data))
+                                                                            (println opposing-team))))
                                             player-datas))
                 ;log (when (= (:name player) "Mohamed Salah")
                 ;      (println player-xg-val))
@@ -228,7 +242,8 @@
                                      ;  ;(println (:team_season_np_xg_conceded_pg team-data))
                                      ;  ;(println (:team_season_np_xg_pg opposing-team))
                                      ;  (println average-xg))
-                                     (if (nil? team-data)
+                                     (if (or (nil? team-data)
+                                             (nil? opposing-team))
                                        0
                                        (team-xg-conceded (:team_season_np_xg_conceded_pg team-data)
                                                          (:team_season_np_xg_pg opposing-team)
