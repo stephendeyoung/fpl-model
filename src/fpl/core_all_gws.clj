@@ -102,25 +102,116 @@
 
 (def current-team
   [
-   ;{:name "Werner" :player_opta_id 165153 :keep 1 :discard 0}
-   ;{:name "Jota" :player_opta_id 194634 :keep 0 :discard 1}
-   ;{:name "Ings" :player_opta_id 84939 :keep 0}
-   ;
-   ;{:name "Pulisic" :player_opta_id 176413 :keep 0}
-   ;{:name "Martial" :player_opta_id 148225 :keep 0 :discard 0}
-   {:name "Stephens" :player_opta_id 40845 :keep 1}
+   ; With Mahrez
    ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
-   ;{:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   ;{:name "DCL" :player_opta_id 177815 :keep 0 :discard 0}
+   ;{:name "Ings" :player_opta_id 84939 :keep 0}
+   ;;
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
+   ;{:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
    ;
+   ;{:name "Son" :player_opta_id 85971 :keep 0 :discard 0}
+   ;{:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   ;;
    ;{:name "Doherty" :player_opta_id 87835 :keep 0}
    ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
-   ;{:name "Bernardo" :player_opta_id 209362 :keep 1 :discard 0}
+   ;{:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
    ;{:name "Alexander-Arnold" :player_opta_id 169187 :keep 0 :discard 0}
-   {:name "Williams" :player_opta_id 215136 :keep 1 :discard 0}
 
+   ; GW3: Son -> Sterling & TAA -> Coady
+
+   ; Without Mahrez
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   ;{:name "DCL" :player_opta_id 177815 :keep 0 :discard 0}
+   ;{:name "Vardy" :player_opta_id 101668 :keep 0}
+   ;;
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
+   ;{:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
+   ;{:name "Mane" :player_opta_id 110979 :keep 0 :discard 0}
+   ;{:name "Trossard" :player_opta_id 116216 :keep 0 :discard 0}
+   ;;
+   ;{:name "Doherty" :player_opta_id 87835 :keep 0}
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   ;{:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
+   ;{:name "Vinagre" :player_opta_id 216054 :keep 0 :discard 0}
+
+   ; 5 good midfielders
+   ;{:name "Wickham" :player_opta_id 59125 :keep 1}
+   ;{:name "DCL" :player_opta_id 177815 :keep 0 :discard 0}
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   ;
+   ;{:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
+   ;{:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
+   ;{:name "Mane" :player_opta_id 110979 :keep 0 :discard 0}
+   ;{:name "Alli" :player_opta_id 108823 :keep 0 :discard 0}
+   ;
+   ;{:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
+   ;{:name "Vinagre" :player_opta_id 216054 :keep 0 :discard 0}
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   ;{:name "Doherty" :player_opta_id 87835 :keep 0}
+
+   ; GW3: Mane -> Sterling & Alli -> Son
+
+   ; With Werner
+   ;{:name "DCL" :player_opta_id 177815 :keep 0 :discard 0}
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   ;
+   ;{:name "Trossard" :player_opta_id 116216 :keep 0 :discard 0}
+   ;{:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
+   ;{:name "Mane" :player_opta_id 110979 :keep 0 :discard 0}
+   ;
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   ;{:name "Vinagre" :player_opta_id 216054 :keep 0 :discard 0}
+   ;{:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
+   ;{:name "Doherty" :player_opta_id 87835 :keep 0}
+
+   ; GW3: Barnes -> Mahrez & Mane -> Sterling?
+
+   ; With Werner 3-5-2
+   ;{:name "Wickham" :player_opta_id 59125 :keep 1}
+   ;{:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+   ;
+   ;{:name "Mahrez" :player_opta_id 103025 :keep 0 :discard 0}
+   ;{:name "Trossard" :player_opta_id 116216 :keep 0 :discard 0}
+   ;{:name "Salah" :player_opta_id 118748 :keep 0}
+   ;{:name "Rashford" :player_opta_id 176297 :keep 0 :discard 0}
+   ;;{:name "Mane" :player_opta_id 110979 :keep 0 :discard 0}
+   ;{:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
+   ;;
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   ;{:name "Vinagre" :player_opta_id 216054 :keep 0 :discard 0}
+   ;;{:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
+   ;{:name "Doherty" :player_opta_id 87835 :keep 0}
+   ;{:name "Alexander-Arnold" :player_opta_id 169187 :keep 1 :discard 0}
+
+   {:name "Wickham" :player_opta_id 59125 :keep 1}
+   {:name "Antonio" :player_opta_id 57531 :keep 0 :discard 0}
+
+   {:name "Alli" :player_opta_id 108823 :keep 0 :discard 0}
+   {:name "Trossard" :player_opta_id 116216 :keep 0 :discard 0}
+   {:name "Salah" :player_opta_id 118748 :keep 0}
+   {:name "Mane" :player_opta_id 110979 :keep 0 :discard 0}
+   {:name "Barnes" :player_opta_id 201666 :keep 0 :discard 0}
+   ;
+   ;{:name "Azpilicueta" :player_opta_id 41328 :keep 0 :discard 0}
+   {:name "Vinagre" :player_opta_id 216054 :keep 0 :discard 0}
+   {:name "Saiss" :player_opta_id 107613 :keep 0 :discard 0}
+   {:name "Coady" :player_opta_id 94147 :keep 0}
+   {:name "Alexander-Arnold" :player_opta_id 169187 :keep 1 :discard 0}
+
+   ;{:name "Stephens" :player_opta_id 40845 :keep 1}
+   {:name "Bernardo" :player_opta_id 209362 :keep 1 :discard 0}
    {:name "Nyland" :player_opta_id 98770 :keep 1 :discard 0}
    {:name "McCarthy" :player_opta_id 58376 :keep 1}
+
+
+   ; GW3: Mane -> Sterling?
    ])
+
+; "Mané"          "Salah"         "Williams"      "Vardy"         "Barnes"        "Antonio"       "Doherty"       "Trossard"      "Saïss"         "Calvert-Lewin" "McCarthy"
+; "Azpilicueta"   "Jonny"         "Stephens"      "Nyland"
 
 (def wanted-players
   [
@@ -158,7 +249,7 @@
 
 (defn fpl-players [fpl-data]
   ;(filter #(= (:web_name %) "Jiménez")
-  (:elements fpl-data))
+  fpl-data)
 
 (defn- add-fpl-players-with-sb-id [fpl-data filtered-gw-data]
   (println "add-fpl-players-with-sb-id")
