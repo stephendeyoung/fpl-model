@@ -39,8 +39,10 @@
                                                               (:team-data-away home-away-data)
                                                               (:team-data-home home-away-data)))))
                                        19)
-                ;log (if (= (:name player) "Mohamed Salah")
+                ;log (if (= (:player_id player) 8956)
                 ;      (println average-xg-conceded))
+                ;log (when (nil? opposing-team)
+                ;      (println (:player_last_name player)))
                 ]
             ;(pprint matches)
             ;(println (:name player))
@@ -52,8 +54,8 @@
             {:player-data         player-data
              :opposing-team       opposing-team
              :average-xg-conceded average-xg-conceded
-             :is-home? (= home-team-id player-team-id)
-             :id (:player_opta_id player)}))
+             :is-home?            (= home-team-id player-team-id)
+             :id                  (:player_opta_id player)}))
         matches))
 
 (defn- collect-team-data [team team-id matches home-away-data]
@@ -107,21 +109,30 @@
 
 (defn- gw-player-xg [fpl-player-data players fixtures blanks doubles home-away-data]
   (mapv (fn [player]
-          (let [player-team-id (:team_id player)
+          (let [fpl-player (first (filter #(= (:player_id %) (:player_id player))
+                                          fpl-player-data))
+                player-team-id (:team_code fpl-player)
+                player-sb-team-id (-> (filter (fn [team]
+                                                (= (:team_opta_id team) player-team-id))
+                                              (:team-data-home home-away-data))
+                                      first
+                                      :team_id)
                 match [(set/rename-keys
-                         (select-keys (first (filter #(or (= player-team-id (:home_team_id %))
-                                                          (= player-team-id (:away_team_id %)))
+                         (select-keys (first (filter #(or (= player-sb-team-id (:home_team_id %))
+                                                          (= player-sb-team-id (:away_team_id %)))
                                                      fixtures))
                                       [:home_team_id :away_team_id])
                          {:home_team_id :home-team-id
                           :away_team_id :away-team-id})]
                 all-matches (concat match
-                                    (filter (fn [match] (if (or (= (:home-team-id match) player-team-id)
-                                                                (= (:away-team-id match) player-team-id))
+                                    (filter (fn [match] (if (or (= (:home-team-id match) player-sb-team-id)
+                                                                (= (:away-team-id match) player-sb-team-id))
                                                           true
                                                           false))
                                             doubles))
-                player-datas (collect-player-data player player-team-id all-matches home-away-data)
+                ;log (when (= (:player_id player) 984904)
+                ;      (println "yo"))
+                player-datas (collect-player-data player player-sb-team-id all-matches home-away-data)
                 ;opposing-team-ids (concat [(if (= home-team-id player-team-id)
                 ;                             away-team-id
                 ;                             home-team-id)]
@@ -164,15 +175,13 @@
                                                 (player-xg (:player_season_np_xg_90 player-data)
                                                            (:team_season_np_xg_conceded_pg opposing-team)
                                                            average-xg-conceded))
-                                                     #_(catch Exception _ (do (println (:name player-data))
-                                                                            (println opposing-team))))
+                                              #_(catch Exception _ (do (println (:name player-data))
+                                                                       (println opposing-team))))
                                             player-datas))
                 ;log (when (= (:name player) "Mohamed Salah")
                 ;      (println player-xg-val))
                 bonus-pts (reduce (fn [total player-data]
-                                    (let [fpl-player (first (filter #(= (:code %) (:id player-data))
-                                                                    fpl-player-data))
-                                          bonus-pts (get-player-bonus (:id fpl-player) (:is-home? player-data))]
+                                    (let [bonus-pts (get-player-bonus (:id fpl-player) (:is-home? player-data))]
                                       (if (nil? bonus-pts)
                                         0
                                         (+ (:bonus-average bonus-pts) total))))

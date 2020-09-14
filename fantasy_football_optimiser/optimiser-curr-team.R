@@ -8,28 +8,80 @@ data <- "http://localhost:3000/" %>%
   getURL %>% 
   fromJSON
 
+dfFilter <- data %>% 
+  .$elements %>% 
+  data.frame %>% 
+  filter(minutes >= 1000
+         #element_type == "2"
+         #& now_cost <= 45
+         ) %>%
+  select(sort(names(.))) %>%
+  select(web_name, 
+         #points_per_90,
+         bonus.pts,
+         #bonus_per_90,
+         expected_points_per_90,
+         expected.points.total, 
+         element_type, 
+         now_cost, 
+         total_points,
+         gw01.expected.points, 
+         gw02.expected.points,
+         gw03.expected.points,
+         gw04.expected.points,
+         gw05.expected.points,
+         gw06.expected.points,
+         gw07.expected.points,
+         gw08.expected.points,
+         #expected_points, 
+         player_season_minutes, 
+         minutes,
+         current_team, 
+         trend
+  )
+
+dfAll <- data %>% 
+  .$elements %>% 
+  data.frame %>% 
+  select(sort(names(.)))
+
 df <- data %>% 
   .$elements %>% 
   data.frame %>% 
   filter(
          web_name != 'Mousset' &
-         web_name != 'Alonso' &   
+         #web_name != 'Alonso' &   
          web_name != 'Abraham' &
          web_name != 'Jota' & 
          web_name != 'Jesus' &    
          web_name != 'Sterling' &
-         web_name != 'Rashford' &
-         web_name != 'Pulisic' &   
+         web_name != 'Maddison' &
+         web_name != 'Jonny' &   
          web_name != 'McGoldrick' &
+         web_name != 'Agüero' &
+         web_name != 'Bernardo Silva' &
+         web_name != 'Pereira' &  
+         web_name != 'Mahrez' &
+         web_name != 'Harry Wilson' &     
+         web_name != 'Mount' &
          (first_name != "Reece" & web_name != 'James') & 
          web_name != 'Walcott' &
          web_name != 'Benteke' &
-         minutes >= 1138 |
+         web_name != 'Pérez' &
+         #web_name != 'Mount' &
+         web_name != 'Rashford' &   
+         web_name != 'Long' &   
+         #player_season_minutes >= 2276 |
+         minutes >= 1138 |   
          web_name == 'Nyland' |
-         (first_name == "Neco" & web_name == 'Williams') |
+         #(first_name == "Neco" & web_name == 'Williams') |
          (first_name == "Dale" & web_name == 'Stephens') |
-         web_name == 'Bernardo' |
-         web_name == 'Werner'
+         web_name == 'Wickham' |
+         web_name == 'Bernardo' |   
+         web_name == 'Vinagre' |
+         web_name == 'Soucek' |
+         web_name == 'Justin' |
+         web_name == 'Mitchell'   
          ) %>%
   mutate(now_cost = now_cost / 10) %>% 
   select(sort(names(.)))
@@ -43,11 +95,11 @@ objective <- df$expected.points.total
 # Fitting Constraints
 num_gk <- 2
 num_def <- 5
-num_mid <- 5
-num_fwd <- 3
-max_cost <- 100
+num_mid <- 4
+num_fwd <- 2
+max_cost <- 83
 min_current_team <- 0
-keep_in_team <- 4
+keep_in_team <- 8
 #discard_from_team <- 0
 
 # Create vectors to constrain by position
@@ -88,9 +140,9 @@ solution <- df %>%
   mutate(solution = x$solution) %>% 
   filter(solution == 1) %>% 
   select(web_name, 
-         points_per_90,
+         #points_per_90,
          bonus.pts,
-         bonus_per_90,
+         #bonus_per_90,
          expected_points_per_90,
          expected.points.total, 
          element_type, 
@@ -98,7 +150,8 @@ solution <- df %>%
          total_points,
          gw01.expected.points, 
          #expected_points, 
-         minutes, 
+         player_season_minutes, 
+         minutes,
          current_team, 
          trend
          ) %>% 

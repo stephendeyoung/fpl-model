@@ -209,7 +209,7 @@
        fpl-data))
 
 (def results-fpl
-  (calculate-expected-values fpl-data fixtures 38 38 [3 4 5 6 7 8] :ignore-appearances true :test? false))
+  (calculate-expected-values fpl-data fixtures 38 38 [1 2 3 4 5 6 7 8] :ignore-appearances true :test? false))
 
 ;(def results-fan-team
 ;  (calculate-expected-values merge-fpl-and-fanteam-data fixtures 38 38 [1 2 3 4 5 6 7 8] :ignore-appearances true :test? false))

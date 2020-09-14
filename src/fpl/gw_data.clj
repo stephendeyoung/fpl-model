@@ -4,104 +4,117 @@
 (defn- read-statsbomb-data [filename]
   (edn/read-string (slurp (str "../resources/" filename))))
 
+;(def base-weight-total 0.0175)
+;(def base-weight-home-away 0.035)
+
+(def min-range-mins 1)
+(def max-range-mins-home-away 22.22)
+(def max-range-mins-total 42.22)
+(def new-data-weight 0.1)
+
+(defn- ema3 [c a]
+  (loop [ct (rest c) res [(first c)]]
+    (if (= (count ct) 0)
+      res
+      (recur
+        (rest ct)
+        (into
+          res
+          [(+ (* a (first ct)) (* (- 1 a) (peek res)))])))))
+
+(defn- merge-gw-player-data [gw-data prev-season-data max-range-mins]
+  (map (fn [data]
+         (let [player-in-prev-season (first (filter #(= (:player_id %) (:player_id data)) prev-season-data))
+               minutes (:player_season_minutes data)
+               proportion-mins-prev-season (if (nil? player-in-prev-season)
+                                             0
+                                             (/ minutes (:player_season_minutes
+                                                          player-in-prev-season)))
+               weight (if (< proportion-mins-prev-season 1)
+                        (+ (/ proportion-mins-prev-season 2)
+                           new-data-weight)
+                        ; (11.1 − 1) / (22.22 − 1) × (1 − 0.5) + 0.5
+                        (+ (* (/ (- proportion-mins-prev-season min-range-mins) (- max-range-mins min-range-mins))
+                              (- 0.97 (+ 0.5 new-data-weight)))
+                           (+ 0.5 new-data-weight)))
+               {player_season_xa_90    :player_season_xa_90
+                player_season_np_xg_90 :player_season_np_xg_90
+                player_season_gsaa_90  :player_season_gsaa_90} data]
+           (merge (select-keys data [:player_id :player_opta_id :team_id :team_opta_id :player_last_name])
+                  {:player_season_xa_90    (cond
+                                             (nil? player-in-prev-season) player_season_xa_90
+                                             (and (not= player-in-prev-season nil)
+                                                  (= minutes 0)) (:player_season_xa_90 player-in-prev-season)
+                                             :else (last (ema3 [(:player_season_xa_90 player-in-prev-season)
+                                                                player_season_xa_90]
+                                                               weight)))
+                   :player_season_np_xg_90 (cond
+                                             (nil? player-in-prev-season) player_season_np_xg_90
+                                             (and (not= player-in-prev-season nil)
+                                                  (= minutes 0)) (:player_season_np_xg_90 player-in-prev-season)
+                                             :else (last (ema3 [(:player_season_np_xg_90 player-in-prev-season)
+                                                                player_season_np_xg_90]
+                                                               weight)))
+                   :player_season_gsaa_90  (cond
+                                             (nil? player-in-prev-season) player_season_gsaa_90
+                                             (and (not= player-in-prev-season nil)
+                                                  (= minutes 0)) (:player_season_gsaa_90 player-in-prev-season)
+                                             :else (last (ema3 [(:player_season_gsaa_90 player-in-prev-season)
+                                                                player_season_gsaa_90]
+                                                               weight)))
+                   :player_season_minutes  (cond
+                                             (nil? player-in-prev-season) minutes
+                                             (and (not= player-in-prev-season nil)
+                                                  (= minutes 0)) (:player_season_minutes player-in-prev-season)
+                                             :else (+ minutes
+                                                      (:player_season_minutes player-in-prev-season)))})))
+       gw-data))
+
+(defn- merge-gw-team-data [gw-data prev-season-data]
+  (map (fn [data]
+         (let [team-in-prev-season (first (filter #(= (:team_id %) (:team_id data)) prev-season-data))
+               matches (:team_season_matches data)
+               proportion-matches-prev-season (/ matches (:team_season_matches team-in-prev-season))
+               weight (+ (/ proportion-matches-prev-season 2)
+                         new-data-weight)
+               {team_season_np_xg_conceded_pg :team_season_np_xg_conceded_pg
+                team_season_np_xg_pg          :team_season_np_xg_pg} data]
+           (merge (select-keys data [:team_id :team_opta_id :team_season_matches])
+                  {:team_season_np_xg_conceded_pg (last (ema3 [(:team_season_np_xg_conceded_pg team-in-prev-season)
+                                                               team_season_np_xg_conceded_pg]
+                                                              weight))
+                   :team_season_np_xg_pg          (last (ema3 [(:team_season_np_xg_pg team-in-prev-season)
+                                                               team_season_np_xg_pg]
+                                                              weight))})))
+       gw-data))
+
+(def prev-season-data
+  {:player-data      (read-statsbomb-data "statsbomb-player-data-gw38.edn")
+   :team-data        (read-statsbomb-data "statsbomb-team-data-gw38.edn")
+   :player-data-home (read-statsbomb-data (str "home_away_data/statsbomb-player-data-home-gw38.edn"))
+   :player-data-away (read-statsbomb-data (str "home_away_data/statsbomb-player-data-away-gw38.edn"))
+   :team-data-home   (read-statsbomb-data (str "home_away_data/statsbomb-team-data-home-gw38.edn"))
+   :team-data-away   (read-statsbomb-data (str "home_away_data/statsbomb-team-data-away-gw38.edn"))})
+
 (def gameweek-data
-  [{:gw          9
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw9.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw9.edn")}
-   {:gw          10
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw10.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw10.edn")}
-   {:gw          11
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw11.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw11.edn")}
-   {:gw          12
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw12.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw12.edn")}
-   {:gw          13
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw13.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw13.edn")}
-   {:gw          14
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw14.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw14.edn")}
-   {:gw          15
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw15.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw15.edn")}
-   {:gw          16
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw16.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw16.edn")}
-   {:gw          17
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw17.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw17.edn")}
-   {:gw          18
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw18.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw18.edn")}
-   {:gw          19
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw19.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw19.edn")}
-   {:gw          20
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw20.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw20.edn")}
-   {:gw          21
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw21.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw21.edn")}
-   {:gw          22
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw22.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw22.edn")}
-   {:gw          23
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw23.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw23.edn")}
-   {:gw          24
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw24.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw24.edn")}
-   {:gw          25
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw25.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw25.edn")}
-   {:gw          26
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw26.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw26.edn")}
-   {:gw          27
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw27.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw27.edn")}
-   {:gw          28
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw28.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw28.edn")}
-   {:gw          29
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw29.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw29.edn")}
-   {:gw          30
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw30.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw30.edn")}
-   {:gw          31
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw31.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw31.edn")}
-   {:gw          32
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw32.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw32.edn")}
-   {:gw          33
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw33.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw33.edn")}
-   {:gw          34
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw34.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw34.edn")}
-   {:gw          35
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw35.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw35.edn")}
-   {:gw          36
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw36.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw36.edn")}
-   {:gw          37
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw37.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw37.edn")}
-   {:gw          38
-    :player-data (read-statsbomb-data "statsbomb-player-data-gw38.edn")
-    :team-data   (read-statsbomb-data "statsbomb-team-data-gw38.edn")}
-   ])
+  [{:gw          38
+    :player-data (merge-gw-player-data (read-statsbomb-data "statsbomb-player-data-gw38.edn")
+                                       (:player-data prev-season-data)
+                                       max-range-mins-total)
+    :team-data   (merge-gw-team-data (read-statsbomb-data "statsbomb-team-data-gw38.edn")
+                                     (:team-data prev-season-data))}])
 
 (defn home-away-data [gw]
-  {:player-data-home (read-statsbomb-data (str "home_away_data/statsbomb-player-data-home-gw" gw ".edn"))
-   :player-data-away (read-statsbomb-data (str "home_away_data/statsbomb-player-data-away-gw" gw ".edn"))
-   :team-data-home   (read-statsbomb-data (str "home_away_data/statsbomb-team-data-home-gw" gw ".edn"))
-   :team-data-away   (read-statsbomb-data (str "home_away_data/statsbomb-team-data-away-gw" gw ".edn"))})
+  {:player-data-home (merge-gw-player-data (read-statsbomb-data (str "home_away_data/statsbomb-player-data-home-gw" gw ".edn"))
+                                           (:player-data-home prev-season-data)
+                                           max-range-mins-home-away)
+   :player-data-away (merge-gw-player-data (read-statsbomb-data (str "home_away_data/statsbomb-player-data-away-gw" gw ".edn"))
+                                           (:player-data-away prev-season-data)
+                                           max-range-mins-home-away)
+   :team-data-home   (merge-gw-team-data (read-statsbomb-data (str "home_away_data/statsbomb-team-data-home-gw" gw ".edn"))
+                                         (:team-data-home prev-season-data))
+   :team-data-away   (merge-gw-team-data (read-statsbomb-data (str "home_away_data/statsbomb-team-data-away-gw" gw ".edn"))
+                                         (:team-data-away prev-season-data))})
 
 (defn fixture-data [fixtures fixtures-to-retrieve test?]
   (filter #(and (>= (:gw %) (first fixtures-to-retrieve))
@@ -241,59 +254,59 @@
            ;                          (.before (:date fixture) #inst "2020-07-27")))
            ;                   fixtures)}
            {:gw       1
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-09-12")
                                      (.before (:date fixture) #inst "2020-09-15")))
                               fixtures)
-            :blanks   [754 247 97 152 425 122 90]}
+            :blanks   [1 43 90 7 45 57 91]}
            {:gw       2
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-09-19")
                                      (.before (:date fixture) #inst "2020-09-22")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       3
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-09-26")
                                      (.before (:date fixture) #inst "2020-09-29")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       4
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-10-03")
                                      (.before (:date fixture) #inst "2020-10-04")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       5
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-10-17")
                                      (.before (:date fixture) #inst "2020-10-18")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       6
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-10-24")
                                      (.before (:date fixture) #inst "2020-10-25")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       7
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-10-31")
                                      (.before (:date fixture) #inst "2020-11-01")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            {:gw       8
-            :test? false
+            :test?    false
             :fixtures (filter (fn [fixture]
                                 (and (.after (:date fixture) #inst "2020-11-07")
                                      (.before (:date fixture) #inst "2020-11-08")))
                               fixtures)
-            :blanks   [425 122 90]}
+            :blanks   [45 57 91]}
            ]))
