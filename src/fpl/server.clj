@@ -5,7 +5,8 @@
     [clojure.data.json :as json]
     [clj-http.client :as client]
     [clojure.edn :as edn]
-    [clojure.string :as string])
+    [clojure.string :as string]
+    [fpl.gw-data :refer [team-xg-diff-rank]])
   (:import (java.text Normalizer$Form Normalizer)))
 
 (defn- get-fpl-data []
@@ -22,6 +23,10 @@
 
 (def fixtures
   (edn/read-string (slurp "../resources/fixtures.edn")))
+
+(defn- filter-fpl-data [fpl-data]
+  ; james rodriguez
+  (filter #(= (:code %) 60025) fpl-data))
 
 (def fpl-data
   (:elements (:body (get-fpl-data))))
@@ -208,15 +213,21 @@
              fpl-player)))
        fpl-data))
 
-(def results-fpl
-  (calculate-expected-values fpl-data fixtures 38 38 [1 2 3 4 5 6 7 8] :ignore-appearances true :test? false))
+;(def results-fpl
+;  (calculate-expected-values fpl-data fixtures 19 19 [20 21 22] :ignore-appearances true :test?
+;                                              false))
 
-;(def results-fan-team
-;  (calculate-expected-values merge-fpl-and-fanteam-data fixtures 38 38 [1 2 3 4 5 6 7 8] :ignore-appearances true :test? false))
+(def results-fan-team
+  (calculate-expected-values merge-fpl-and-fanteam-data fixtures 19 19 [20 21 22] :ignore-appearances
+                             true
+                             :test?
+                             false))
 
 (defn handler [request]
   {:status  200
    :headers {"Content-Type" "application/json"}
-   :body    (json/write-str results-fpl)})
+   :body    (if (= (:uri request) "/teams")
+              (json/write-str team-xg-diff-rank)
+              (json/write-str results-fan-team))})
 
 (defn -main [] (run-jetty handler {:port 3000}))

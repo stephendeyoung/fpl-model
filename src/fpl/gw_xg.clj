@@ -209,6 +209,7 @@
 (defn- gw-team-xg [teams fixtures blanks doubles home-away-data]
   (mapv (fn [team]
           (let [team-id (:team_id team)
+                team-opta-id (:team_opta_id team)
                 ;{home-team-id :home_team_id
                 ; away-team-id :away_team_id} (first (filter #(or (= team-id (:home_team_id %))
                 ;                                                 (= team-id (:away_team_id %)))
@@ -261,7 +262,7 @@
                 ;log (when (= (:team_name team) "Crystal Palace")
                 ;      (println "\n")
                 ;      (println team-xg-vals))
-                has-blank-gw? (some #(= team-id %) blanks)
+                has-blank-gw? (some #(= team-opta-id %) blanks)
                 ;log (if (true? has-blank-gw?)
                 ;      (do (clojure.pprint/pprint team-data)
                 ;          (clojure.pprint/pprint home-team-id)
