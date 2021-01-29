@@ -28,57 +28,57 @@ df$discard <- 0
 ################### Current Team #################
 
 # Watkins
-df$current_team[df$code == 178301] <- 1
-df$now_cost[df$code == 178301] <- 61
-# Wood
-df$current_team[df$code == 60689] <- 1
-df$now_cost[df$code == 60689] <- 62
-# Abraham
-df$current_team[df$code == 173879] <- 1
-df$now_cost[df$code == 173879] <- 72
-
-# Fernandes
-df$current_team[df$code == 141746] <- 1
-df$now_cost[df$code == 141746] <- 112
-# Harrison
-df$current_team[df$code == 221399] <- 1
-df$now_cost[df$code == 221399] <- 54
-# Salah
-df$current_team[df$code == 118748] <- 1
-df$now_cost[df$code == 118748] <- 122
-# Raphina
-df$current_team[df$code == 219961] <- 1
-df$now_cost[df$code == 219961] <- 54
-# Soucek
-df$current_team[df$code == 215439] <- 1
-df$now_cost[df$code == 215439] <- 52
-
-# James
-df$current_team[df$code == 225796] <- 1
-df$now_cost[df$code == 225796] <- 51
-# Cancelo
-df$current_team[df$code == 121145] <- 1
-df$now_cost[df$code == 121145] <- 58
-# TAA
-df$current_team[df$code == 169187] <- 1
-df$now_cost[df$code == 169187] <- 72
-# Robertson
-df$current_team[df$code == 122798] <- 1
-df$now_cost[df$code == 122798] <- 73
-#df$discard[df$code == 216054] <- 1
-# Coufal
-df$current_team[df$code == 164555] <- 1
-df$now_cost[df$code == 164555] <- 47
-#df$keep[df$code == 244723] <- 1
-
-# Johnstone
-df$current_team[df$code == 101982] <- 1
-df$keep[df$code == 101982] <- 1
-df$now_cost[df$code == 98770] <- 45
-# McCarthy
-df$current_team[df$code == 58376] <- 1
-df$keep[df$code == 58376] <- 1
-df$now_cost[df$code == 58376] <- 46
+# df$current_team[df$code == 178301] <- 1
+# df$now_cost[df$code == 178301] <- 61
+# # Wood
+# df$current_team[df$code == 60689] <- 1
+# df$now_cost[df$code == 60689] <- 62
+# # Abraham
+# df$current_team[df$code == 173879] <- 1
+# df$now_cost[df$code == 173879] <- 72
+# 
+# # Fernandes
+# df$current_team[df$code == 141746] <- 1
+# df$now_cost[df$code == 141746] <- 112
+# # Harrison
+# df$current_team[df$code == 221399] <- 1
+# df$now_cost[df$code == 221399] <- 54
+# # Salah
+# df$current_team[df$code == 118748] <- 1
+# df$now_cost[df$code == 118748] <- 122
+# # Raphina
+# df$current_team[df$code == 219961] <- 1
+# df$now_cost[df$code == 219961] <- 54
+# # Soucek
+# df$current_team[df$code == 215439] <- 1
+# df$now_cost[df$code == 215439] <- 52
+# 
+# # James
+# df$current_team[df$code == 225796] <- 1
+# df$now_cost[df$code == 225796] <- 51
+# # Cancelo
+# df$current_team[df$code == 121145] <- 1
+# df$now_cost[df$code == 121145] <- 58
+# # TAA
+# df$current_team[df$code == 169187] <- 1
+# df$now_cost[df$code == 169187] <- 72
+# # Robertson
+# df$current_team[df$code == 122798] <- 1
+# df$now_cost[df$code == 122798] <- 73
+# #df$discard[df$code == 216054] <- 1
+# # Coufal
+# df$current_team[df$code == 164555] <- 1
+# df$now_cost[df$code == 164555] <- 47
+# #df$keep[df$code == 244723] <- 1
+# 
+# # Johnstone
+# df$current_team[df$code == 101982] <- 1
+# df$keep[df$code == 101982] <- 1
+# df$now_cost[df$code == 98770] <- 45
+# # McCarthy
+# df$current_team[df$code == 58376] <- 1
+# df$keep[df$code == 58376] <- 1
+# df$now_cost[df$code == 58376] <- 46
 # # 
 # # ################### Wanted Team ##################
 # Smith-Rowe
@@ -203,56 +203,56 @@ df$now_cost[df$code == 58376] <- 46
 ################### Current Team #################
 
 # Bamford
-# df$current_team[df$code == 106617] <- 1
-# df$now_cost[df$code == 106617] <- 64
-# # Adams
-# df$current_team[df$code == 200439] <- 1
-# df$now_cost[df$code == 200439] <- 60
-# # Wood
-# df$current_team[df$code == 60689] <- 1
-# df$now_cost[df$code == 60689] <- 62
-# 
-# # Raphina
-# df$current_team[df$code == 219961] <- 1
-# df$now_cost[df$code == 219961] <- 54
-# # KDB
-# df$current_team[df$code == 61366] <- 1
-# df$now_cost[df$code == 61366] <- 118
-# df$discard[df$code == 61366] <- 1
-# # Salah
-# df$current_team[df$code == 118748] <- 1
-# df$now_cost[df$code == 118748] <- 122
-# # Mane
-# df$current_team[df$code == 110979] <- 1
-# df$now_cost[df$code == 110979] <- 118
-# # Soucek
-# df$current_team[df$code == 215439] <- 1
-# df$now_cost[df$code == 215439] <- 52
-# 
-# # Cancelo
-# df$current_team[df$code == 121145] <- 1
-# df$now_cost[df$code == 121145] <- 57
-# # James
-# df$current_team[df$code == 225796] <- 1
-# df$now_cost[df$code == 225796] <- 51
-# # Alioski
-# df$current_team[df$code == 105377] <- 1
-# df$now_cost[df$code == 105377] <- 44
-# # Stones
-# df$current_team[df$code == 97299] <- 1
-# df$now_cost[df$code == 97299] <- 50
-# # Coufal
-# df$current_team[df$code == 164555] <- 1
-# df$now_cost[df$code == 164555] <- 47
-# 
-# # Johnstone
-# df$current_team[df$code == 101982] <- 1
-# df$keep[df$code == 101982] <- 1
-# df$now_cost[df$code == 101982] <- 45
-# # McCarthy
-# df$current_team[df$code == 58376] <- 1
-# df$keep[df$code == 58376] <- 1
-# df$now_cost[df$code == 58376] <- 46
+df$current_team[df$code == 106617] <- 1
+df$now_cost[df$code == 106617] <- 64
+# Antonio
+df$current_team[df$code == 57531] <- 1
+df$now_cost[df$code == 57531] <- 63
+# Wood
+df$current_team[df$code == 60689] <- 1
+df$now_cost[df$code == 60689] <- 62
+
+# Raphina
+df$current_team[df$code == 219961] <- 1
+df$now_cost[df$code == 219961] <- 54
+# Fernandes
+df$current_team[df$code == 141746] <- 1
+df$now_cost[df$code == 141746] <- 113
+#df$discard[df$code == 61366] <- 1
+# Salah
+df$current_team[df$code == 118748] <- 1
+df$now_cost[df$code == 118748] <- 122
+# Mane
+df$current_team[df$code == 110979] <- 1
+df$now_cost[df$code == 110979] <- 118
+# Soucek
+df$current_team[df$code == 215439] <- 1
+df$now_cost[df$code == 215439] <- 52
+
+# Cancelo
+df$current_team[df$code == 121145] <- 1
+df$now_cost[df$code == 121145] <- 57
+# James
+df$current_team[df$code == 225796] <- 1
+df$now_cost[df$code == 225796] <- 51
+# Alioski
+df$current_team[df$code == 105377] <- 1
+df$now_cost[df$code == 105377] <- 44
+# Stones
+df$current_team[df$code == 97299] <- 1
+df$now_cost[df$code == 97299] <- 51
+# Coufal
+df$current_team[df$code == 164555] <- 1
+df$now_cost[df$code == 164555] <- 47
+
+# Johnstone
+df$current_team[df$code == 101982] <- 1
+df$keep[df$code == 101982] <- 1
+df$now_cost[df$code == 101982] <- 45
+# McCarthy
+df$current_team[df$code == 58376] <- 1
+df$keep[df$code == 58376] <- 1
+df$now_cost[df$code == 58376] <- 46
 # 
 # ################### Wanted Team ##################
 # # Bamford
@@ -318,7 +318,8 @@ dfFilter <- df %>%
          #minutes >= 800
          #& element_type == "4"
          #& now_cost <= 6.2
-
+         team_code == 43 |
+         team_code == 35   
          ) %>%
   select(web_name,
          #points_per_90,
@@ -334,13 +335,17 @@ dfFilter <- df %>%
          #gw17.expected.points,
          #gw18.expected.points,
          #gw19.expected.points,
-         gw20.expected.points,
+         gw21.expected.points,
          #expected_points,
          code,
          minutes,
          current_team,
-         trend
+         team_code
   )
+
+print(dfFilter %>% { sum(.$gw20.expected.points) })
+
+print(dfFilter %>% { mean(.$gw20.expected.points) })
 
 dfFilter$value <- (dfFilter$expected.points.total / dfFilter$now_cost)
 
@@ -378,7 +383,7 @@ df <- df %>%
          web_name != 'Mahrez' &
          #web_name != 'Lundstram' &
          web_name != 'Kilman' &
-         #web_name != 'Podence' &
+         web_name != 'Saïss' &
          #(first_name != "Reece" & web_name != 'James') &
          #web_name != 'Watkins' &
          #web_name != 'Grealish' &
@@ -389,7 +394,7 @@ df <- df %>%
          #web_name != 'Wilson' &
          #web_name != 'Maupay' &
          minutes >= 100 &
-         player_season_minutes >= 800 |
+         player_season_minutes >= 900 |
          #player_season_minutes >= 1000 |
          web_name == 'Nyland' |
          #(first_name == "Neco" & web_name == 'Williams') |
@@ -436,9 +441,9 @@ num_gk <- 2
 num_def <- 5
 num_mid <- 5
 num_fwd <- 3
-itb <- 2.3
+itb <- 0.6
 max_cost <- df %>% filter(current_team == 1) %>% { sum(.$now_cost) } + itb
-min_current_team <- 15
+min_current_team <- 12
 keep_in_team <- 2
 discard_from_team <- 0
 
@@ -493,7 +498,7 @@ solution <- df %>%
          element_type,
          now_cost,
          total_points,
-         gw20.expected.points,
+         gw21.expected.points,
          #expected_points,
          code,
          minutes,
@@ -501,7 +506,7 @@ solution <- df %>%
          current_team,
          trend
          ) %>%
-  arrange(desc(gw20.expected.points))
+  arrange(desc(gw21.expected.points))
 
 #print(solution$web_name)
 

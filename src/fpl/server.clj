@@ -213,21 +213,21 @@
              fpl-player)))
        fpl-data))
 
-;(def results-fpl
-;  (calculate-expected-values fpl-data fixtures 19 19 [20 21 22] :ignore-appearances true :test?
-;                                              false))
+(def results-fpl
+  (calculate-expected-values fpl-data fixtures 20 20 [21 22 23] :ignore-appearances true :test?
+                                              false))
 
-(def results-fan-team
-  (calculate-expected-values merge-fpl-and-fanteam-data fixtures 19 19 [20 21 22] :ignore-appearances
-                             true
-                             :test?
-                             false))
+;(def results-fan-team
+;  (calculate-expected-values merge-fpl-and-fanteam-data fixtures 20 20 [21 22 23] :ignore-appearances
+;                             true
+;                             :test?
+;                             false))
 
 (defn handler [request]
   {:status  200
    :headers {"Content-Type" "application/json"}
    :body    (if (= (:uri request) "/teams")
               (json/write-str team-xg-diff-rank)
-              (json/write-str results-fan-team))})
+              (json/write-str results-fpl))})
 
 (defn -main [] (run-jetty handler {:port 3000}))

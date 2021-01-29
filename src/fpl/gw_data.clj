@@ -35,13 +35,25 @@
                  proportion-mins-prev-season (if (nil? player-in-prev-season)
                                                0
                                                (/ minutes minutes-prev-season))
-                 weight (if (< proportion-mins-prev-season 1)
-                          (+ (/ proportion-mins-prev-season 2)
-                             new-data-weight)
-                          ; (((3715 / 1275) - 1) / ((3715 / 1275) - 1)) * (1 - 0.6) + 0.6
-                          (+ (* (/ (- proportion-mins-prev-season 1) (- (/ max-possible-mins minutes-prev-season) 1))
-                                0.6)
-                             0.6))
+                 ;weight (if (< proportion-mins-prev-season 1)
+                 ;         (+ (/ proportion-mins-prev-season 2)
+                 ;            new-data-weight)
+                 ;         ; (((3715 / 1275) - 1) / ((3715 / 1275) - 1)) * (1 - 0.6) + 0.6
+                 ;         (+ (* (/ (- proportion-mins-prev-season 1) (- (/ max-possible-mins minutes-prev-season) 1))
+                 ;               0.6)
+                 ;            0.6))
+                 ; (((1900 − 1) / (1000 − 1) × (1 − 0.1)) + 0.1) × (1000 / 1900)
+                 calculated-weight (when player-in-prev-season
+                                     ;(if (< proportion-mins-prev-season 1)
+                                       (+ (* (/ (- minutes 1) (- minutes-prev-season 1))
+                                             (/ minutes-prev-season max-possible-mins))
+                                          (* (/ (- minutes 1) (- max-possible-mins 1))
+                                             0.6)))
+                                       ;(* (/ (- minutes 1) (- minutes-prev-season 1))
+                                       ;   0.6)))
+                 weight (if (and player-in-prev-season (> calculated-weight 1))
+                          1
+                          calculated-weight)
                  {player_season_xa_90    :player_season_xa_90
                   player_season_np_xg_90 :player_season_np_xg_90
                   player_season_gsaa_90  :player_season_gsaa_90} data
@@ -59,19 +71,20 @@
                                       :else (last (ema3 [(:player_season_np_xg_90 player-in-prev-season)
                                                          player_season_np_xg_90]
                                                         weight)))]
-             (when (> weight 1)
+             (when (and player-in-prev-season (> weight 1))
                (throw (ex-info (str (:name data) "'s weight is greater than 1")
-                               {:weight weight
+                               {:weight                      weight
                                 :proportion-mins-prev-season proportion-mins-prev-season
-                                :minutes minutes
-                                :minutes-prev-season minutes-prev-season
-                                :max-mins max-possible-mins})))
-             (when (or #_(= "Mohamed Salah" (:name data))
+                                :minutes                     minutes
+                                :minutes-prev-season         minutes-prev-season
+                                :max-mins                    max-possible-mins})))
+             (when (or (= "Mohamed Salah" (:name data))
                        #_(= "Harry Kane" (:name data))
                        #_(= "Timo Werner" (:name data))
                        #_(= "Raheem Sterling" (:name data))
-                       (= "Christian Pulisic" (:name data))
-                       #_(= "Bruno Fernandes" (:name data))
+                       #_(= "Christian Pulisic" (:name data))
+                       (= "Michail Antonio" (:name data))
+                       (= "Bruno Fernandes" (:name data))
                        #_(= "Che Adams" (:name data))
                        #_(= "Jarrod Bowen" (:name data)))
                (println (str (:name data) " " type " latest: " (if latest? true false)))
@@ -88,7 +101,7 @@
                (println "max-possible-mins" max-possible-mins)
                (println ""))
              (merge (select-keys data [:player_id :player_opta_id :team_id :team_opta_id :player_last_name])
-                    {:player_season_xa_90 weighted-xa-per-90
+                    {:player_season_xa_90    weighted-xa-per-90
                      :player_season_np_xg_90 weighted-xg-per-90
                      :player_season_gsaa_90  (cond
                                                (nil? player-in-prev-season) player_season_gsaa_90
@@ -294,9 +307,17 @@
     :player-data (merge-gw-player-data (read-statsbomb-data "statsbomb-player-data-gw19.edn")
                                        (:player-data prev-season-data)
                                        max-range-mins-total
+                                       "both")
+    :team-data   (merge-gw-team-data (read-statsbomb-data "statsbomb-team-data-gw19.edn")
+                                     (:team-data prev-season-data)
+                                     "both")}
+   {:gw          20
+    :player-data (merge-gw-player-data (read-statsbomb-data "statsbomb-player-data-gw20.edn")
+                                       (:player-data prev-season-data)
+                                       max-range-mins-total
                                        "both"
                                        true)
-    :team-data   (merge-gw-team-data (read-statsbomb-data "statsbomb-team-data-gw19.edn")
+    :team-data   (merge-gw-team-data (read-statsbomb-data "statsbomb-team-data-gw20.edn")
                                      (:team-data prev-season-data)
                                      "both"
                                      true)}])
@@ -313,7 +334,7 @@
         xg-diff-rank-prev (calculate-xg-diff-rank (:team-data prev-season-data) :xg-diff-prev)
         combined-ranks (map (fn [team-xg-diff]
                               (let [prev-xg-diff (first (filter #(= (:team_id team-xg-diff) (:team_id %))
-                                                            xg-diff-rank-prev))]
+                                                                xg-diff-rank-prev))]
                                 (assoc team-xg-diff :xg-diff-prev (:xg-diff-prev prev-xg-diff)
                                                     :team_season_np_xg_pg_prev (:team_season_np_xg_pg prev-xg-diff)
                                                     :team_season_np_xg_conceded_pg_prev
@@ -611,21 +632,21 @@
                                 (and (.after (:date fixture) #inst "2021-01-15")
                                      (.before (:date fixture) #inst "2021-01-22")))
                               fixtures)
-            :test? false
-            :doubles [{:home-team-id 183
-                       :away-team-id 41}
-                      {:home-team-id 110
-                       :away-team-id 666}
-                      ;{:home-team-id 184
-                      ; :away-team-id 118}
-                      {:home-team-id 87
-                       :away-team-id 754}
-                      {:home-team-id 733
-                       :away-team-id 97}
-                      {:home-team-id 247
-                       :away-team-id 152}
-                      {:home-team-id 152
-                       :away-team-id 168}]}
+            :test?    false
+            :doubles  [{:home-team-id 183
+                        :away-team-id 41}
+                       {:home-team-id 110
+                        :away-team-id 666}
+                       ;{:home-team-id 184
+                       ; :away-team-id 118}
+                       {:home-team-id 87
+                        :away-team-id 754}
+                       {:home-team-id 733
+                        :away-team-id 97}
+                       {:home-team-id 247
+                        :away-team-id 152}
+                       {:home-team-id 152
+                        :away-team-id 168}]}
            {:gw       20
             :test?    false
             :fixtures (filter (fn [fixture]
